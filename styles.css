@@ -766,10 +766,12 @@ body::before {
 }
 
 #wheel-canvas {
-    max-width: 100%;
-    height: auto;
+    width: 500px;
+    height: 500px;
     display: block;
     margin: 20px auto;
+    border: 2px solid #FFD700;
+    background: #222;
 }
 
 .red-thread {
@@ -999,15 +1001,15 @@ body::before {
 }
 
 .angel {
-    font-size: 2em;
+    font-size: 0.8em;
     opacity: 0.6;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .angel img {
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     object-fit: contain;
 }
 

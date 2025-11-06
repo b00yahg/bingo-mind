@@ -333,9 +333,6 @@ function showAngelMessage() {
             Three failures in a row will make the confident blind,<br>
             A truth emerges from his twisted mind."
         </p>
-        <p style="color: #FF0000; font-size: 0.9em; margin-top: 15px;">
-            💡 Try losing on purpose three times in a row...
-        </p>
         <button id="close-angel-popup" style="
             margin-top: 20px;
             padding: 10px 30px;
