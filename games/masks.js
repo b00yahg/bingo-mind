@@ -227,16 +227,19 @@ function selectShell(index) {
             MasksGame.losses++;
             MasksGame.consecutiveLosses++;
 
+            console.log('🎭 Loss! Consecutive losses:', MasksGame.consecutiveLosses);
+
             playSound(SHELL_SOUNDS.lose);
             window.GameApp.showNotification('❌ The devil deceived you!');
 
             // PUZZLE 2: Lose 3 times in a row (HIDDEN)
             if (!MasksGame.puzzles.puzzle2Complete && MasksGame.consecutiveLosses >= 3) {
+                console.log('🎭 THREE LOSSES IN A ROW! Unlocking fragment 7...');
                 MasksGame.puzzles.puzzle2Complete = true;
                 setTimeout(() => {
                     startDevilLaugh();
                     window.GameApp.revealFragment(7); // Reveals "T"
-                    window.GameApp.showNotification('The devil laughs at your failures!');
+                    window.GameApp.showNotification('🔥 The devil laughs at your failures! 🔥');
                 }, 1000);
             }
         }
@@ -268,7 +271,7 @@ function startDevilLaugh() {
         // Update devil image
         const devilImg = devil.querySelector('img');
         if (devilImg) {
-            devilImg.src = 'assets/images/characters/devil_laughing.gif';
+            devilImg.src = 'assets/images/characters/devil_laughing.png';
         }
     }
 
@@ -375,11 +378,12 @@ function activateKnife(e) {
         isDragging = true;
 
         // Create a draggable knife element
-        draggedKnife = document.createElement('div');
-        draggedKnife.innerHTML = '🔪';
+        draggedKnife = document.createElement('img');
+        draggedKnife.src = 'assets/images/weapons/knife.gif';
         draggedKnife.style.cssText = `
             position: fixed;
-            font-size: 3em;
+            width: 60px;
+            height: 60px;
             pointer-events: none;
             z-index: 9999;
             transform: translate(-50%, -50%);
