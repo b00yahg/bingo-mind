@@ -288,6 +288,7 @@ function handleFortuneResult(fortune) {
 
     // PUZZLE 2: Spin exactly 7 times then wait (HIDDEN)
     if (!ThreadsGame.puzzles.puzzle2Complete && ThreadsGame.spinCount === 7) {
+        console.log('⭐ You spun 7 times! Waiting 5 seconds...');
         // Start timer to check if they don't spin again
         setTimeout(() => {
             if (ThreadsGame.spinCount === 7 && !ThreadsGame.puzzles.puzzle2Complete) {
@@ -295,6 +296,9 @@ function handleFortuneResult(fortune) {
                 playSound(WHEEL_SOUNDS.fragment);
                 window.GameApp.revealFragment(4); // Reveals "3"
                 window.GameApp.showNotification('✨ SEVEN IS THE LUCKY NUMBER! ✨');
+                console.log('✅ Fragment 4 unlocked after waiting!');
+            } else {
+                console.log('❌ You spun again! Spin count is now:', ThreadsGame.spinCount);
             }
         }, 5000);
     }
@@ -348,7 +352,30 @@ function showFortunePopup(fortune) {
 
 // Trigger creepy effect for "NIW UOY"
 function triggerCreepyEffect() {
-    window.GameApp.showNotification('⚠️ Something feels... wrong...');
+    console.log('💀 NIW UOY landed - triggering creepy effect!');
+
+    // Cut the background music suddenly
+    const bgMusic = document.getElementById('background-music');
+    let musicWasPlaying = false;
+    if (bgMusic && !bgMusic.paused) {
+        musicWasPlaying = true;
+        bgMusic.pause();
+        console.log('🔇 Music cut!');
+    }
+
+    // Create dark flash overlay
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 9999;
+        animation: dark-flash 0.5s ease-out;
+    `;
+    document.body.appendChild(flash);
 
     // Glitch effect
     document.body.style.animation = 'glitch-shake 0.5s ease-in-out';
@@ -356,39 +383,51 @@ function triggerCreepyEffect() {
 
     // Play reversed/distorted sound if available
     const creepyAudio = new Audio('assets/sounds/creepy_reverse.mp3');
-    creepyAudio.volume = 0.2;
-    creepyAudio.play().catch(e => console.log('Audio failed:', e));
+    creepyAudio.volume = 0.3;
+    creepyAudio.play().catch(e => console.log('Creepy audio failed:', e));
 
-    // Show warning message
-    const warning = document.createElement('div');
-    warning.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #000;
-        color: #ff0000;
-        padding: 30px;
-        border: 3px solid #ff0000;
-        font-size: 1.5em;
-        text-align: center;
-        z-index: 5001;
-        font-family: 'Courier New', monospace;
-        animation: glitch-text 0.1s infinite;
-    `;
-    warning.innerHTML = `
-        YOU SHOULDN'T BE HERE<br>
-        THIS ISN'T YOUR WIN<br>
-        <span style="font-size: 0.7em;">Type /reverse to escape...</span>
-    `;
-    document.body.appendChild(warning);
-
-    // Reset after 4 seconds
+    // Show warning message after flash
     setTimeout(() => {
-        document.body.style.animation = '';
-        document.body.style.filter = '';
-        warning.remove();
-    }, 4000);
+        window.GameApp.showNotification('⚠️ Something feels... WRONG...');
+
+        const warning = document.createElement('div');
+        warning.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            color: #ff0000;
+            padding: 40px;
+            border: 3px solid #ff0000;
+            font-size: 1.8em;
+            text-align: center;
+            z-index: 10000;
+            font-family: 'Fredoka', sans-serif;
+            animation: glitch-text 0.1s infinite;
+            box-shadow: 0 0 30px #ff0000;
+        `;
+        warning.innerHTML = `
+            YOU SHOULDN'T BE HERE<br>
+            THIS ISN'T YOUR WIN<br>
+            <span style="font-size: 0.6em; color: #ff6666;">Type /reverse to escape...</span>
+        `;
+        document.body.appendChild(warning);
+
+        // Reset after 4 seconds
+        setTimeout(() => {
+            document.body.style.animation = '';
+            document.body.style.filter = '';
+            flash.remove();
+            warning.remove();
+
+            // Resume music
+            if (musicWasPlaying && bgMusic) {
+                bgMusic.play();
+                console.log('🔊 Music resumed');
+            }
+        }, 4000);
+    }, 500);
 }
 
 // Show thread
@@ -573,6 +612,11 @@ threadsStyle.textContent = `
         0% { opacity: 1; }
         50% { opacity: 0.8; transform: skew(5deg); }
         100% { opacity: 1; }
+    }
+    @keyframes dark-flash {
+        0% { opacity: 1; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
     }
 `;
 document.head.appendChild(threadsStyle);
