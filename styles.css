@@ -845,8 +845,8 @@ body::before {
 }
 
 .devil img {
-    width: 100px;
-    height: 100px;
+    width: 250px;
+    height: 250px;
     object-fit: contain;
 }
 
@@ -1006,8 +1006,8 @@ body::before {
 }
 
 .angel img {
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
     object-fit: contain;
 }
 

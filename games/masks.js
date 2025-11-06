@@ -301,16 +301,67 @@ function startDevilLaugh() {
 
 // Show angel message
 function showAngelMessage() {
-    const hintBox = document.getElementById('hint-masks-2');
-    hintBox.innerHTML = `
-        <strong>👼 Angel's Wisdom:</strong> "For every win, his pride does grow,
-        But everyone laughs when fools fall low.
-        Three failures in a row will make the confident blind,
-        A truth emerges from his twisted mind."
-        <br><br>
-        <em style="color: var(--accent-cyan);">💡 Try losing on purpose three times in a row...</em>
+    console.log('Angel clicked!');
+
+    // Create a popup modal for the angel's message
+    const popup = document.createElement('div');
+    popup.className = 'angel-popup';
+    popup.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #fff 0%, #e0e0ff 100%);
+        color: #000;
+        padding: 30px 40px;
+        border: 5px solid #FFD700;
+        border-radius: 15px;
+        font-size: 1.2em;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+        max-width: 500px;
+        font-family: 'Fredoka', sans-serif;
     `;
-    hintBox.classList.add('visible');
+
+    popup.innerHTML = `
+        <div style="font-size: 2em; margin-bottom: 10px;">👼</div>
+        <strong style="font-size: 1.3em; color: #0066FF;">Angel's Wisdom</strong>
+        <p style="margin: 15px 0; line-height: 1.5;">
+            "For every win, his pride does grow,<br>
+            But everyone laughs when fools fall low.<br>
+            Three failures in a row will make the confident blind,<br>
+            A truth emerges from his twisted mind."
+        </p>
+        <p style="color: #FF0000; font-size: 0.9em; margin-top: 15px;">
+            💡 Try losing on purpose three times in a row...
+        </p>
+        <button id="close-angel-popup" style="
+            margin-top: 20px;
+            padding: 10px 30px;
+            font-size: 1em;
+            background: #FFD700;
+            border: 2px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Fredoka', sans-serif;
+        ">GOT IT</button>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Close button handler
+    document.getElementById('close-angel-popup').addEventListener('click', () => {
+        popup.remove();
+    });
+
+    // Auto remove after 20 seconds if not clicked
+    setTimeout(() => {
+        if (popup.parentElement) {
+            popup.remove();
+        }
+    }, 20000);
 }
 
 // Show knife hint

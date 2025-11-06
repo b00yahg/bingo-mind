@@ -31,16 +31,21 @@ const WHEEL_SOUNDS = {
 };
 
 let canvas, ctx;
+let wheelInitialized = false;
 
 // Initialize Threads Game
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing threads game...');
     initThreadsGame();
 });
 
 function initThreadsGame() {
+    console.log('initThreadsGame called');
+
     canvas = document.getElementById('wheel-canvas');
     if (!canvas) {
-        console.error('Canvas element not found!');
+        console.error('Canvas element not found! Retrying in 100ms...');
+        setTimeout(initThreadsGame, 100);
         return;
     }
 
@@ -53,8 +58,9 @@ function initThreadsGame() {
     }
 
     console.log('Canvas context initialized successfully');
+    wheelInitialized = true;
 
-    // Load saved progress
+    // Load saved progress - but it will be cleared on page load anyway
     const saved = localStorage.getItem('threadsProgress');
     if (saved) {
         const progress = JSON.parse(saved);
@@ -67,15 +73,20 @@ function initThreadsGame() {
         if (spinCountEl) spinCountEl.textContent = ThreadsGame.spinCount;
     }
 
-    // Draw initial wheel
-    console.log('Drawing initial wheel...');
-    drawWheel();
-    console.log('Wheel drawn!');
+    // Draw initial wheel - force it!
+    console.log('Drawing initial wheel NOW...');
+    try {
+        drawWheel(0);
+        console.log('✓ Wheel drawn successfully!');
+    } catch (error) {
+        console.error('Error drawing wheel:', error);
+    }
 
     // Spin button
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) {
         spinBtn.addEventListener('click', spinWheel);
+        console.log('Spin button handler attached');
     }
 
     // Command prompt setup
@@ -87,14 +98,27 @@ function initThreadsGame() {
 
 // Draw the fortune wheel (with text on segments)
 function drawWheel(rotation = 0) {
+    if (!canvas || !ctx) {
+        console.error('Canvas or context not available in drawWheel!');
+        return;
+    }
+
+    console.log('drawWheel executing with rotation:', rotation);
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     const radius = 200;
     const numSegments = ThreadsGame.fortunes.length;
     const anglePerSegment = (Math.PI * 2) / numSegments;
 
-    // Clear canvas
+    console.log('Drawing wheel - center:', centerX, centerY, 'radius:', radius);
+
+    // Clear canvas with a visible background first (for testing)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Fill background to prove canvas is working
+    ctx.fillStyle = '#222';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw segments
     for (let i = 0; i < numSegments; i++) {
@@ -119,9 +143,9 @@ function drawWheel(rotation = 0) {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 13px Courier New';
+        ctx.font = 'bold 14px Arial';
         ctx.shadowColor = '#fff';
-        ctx.shadowBlur = 3;
+        ctx.shadowBlur = 4;
 
         // Split text into multiple lines if needed
         const text = ThreadsGame.fortunes[i].text;
@@ -142,18 +166,18 @@ function drawWheel(rotation = 0) {
     // Draw center circle
     ctx.beginPath();
     ctx.arc(centerX, centerY, 40, 0, Math.PI * 2);
-    ctx.fillStyle = '#000033';
+    ctx.fillStyle = '#000';
     ctx.fill();
-    ctx.strokeStyle = '#ff00ff';
+    ctx.strokeStyle = '#FFD700';
     ctx.lineWidth = 4;
     ctx.stroke();
 
     // Draw "FATE" text in center
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 20px Courier New';
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 20px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.shadowColor = '#ff00ff';
+    ctx.shadowColor = '#FFD700';
     ctx.shadowBlur = 5;
     ctx.fillText('FATE', centerX, centerY);
 
@@ -168,6 +192,8 @@ function drawWheel(rotation = 0) {
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 3;
     ctx.stroke();
+
+    console.log('✓ Wheel drawing complete');
 }
 
 // Spin the wheel
@@ -565,18 +591,21 @@ document.head.appendChild(style);
 
 // Add redraw function to ThreadsGame
 ThreadsGame.redrawWheel = function() {
+    console.log('redrawWheel called');
     if (!canvas || !ctx) {
         console.log('Re-initializing canvas...');
         canvas = document.getElementById('wheel-canvas');
         if (canvas) {
             ctx = canvas.getContext('2d');
+            console.log('Canvas re-initialized:', canvas.width, 'x', canvas.height);
         }
     }
     if (canvas && ctx) {
         console.log('Redrawing wheel at rotation:', ThreadsGame.currentRotation);
         drawWheel(ThreadsGame.currentRotation);
     } else {
-        console.error('Canvas not available for redraw');
+        console.error('Canvas not available for redraw - initializing fresh');
+        initThreadsGame();
     }
 };
 
