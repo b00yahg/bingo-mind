@@ -236,10 +236,17 @@ function selectShell(index) {
             if (!MasksGame.puzzles.puzzle2Complete && MasksGame.consecutiveLosses >= 3) {
                 console.log('🎭 THREE LOSSES IN A ROW! Unlocking fragment 7...');
                 MasksGame.puzzles.puzzle2Complete = true;
+
                 setTimeout(() => {
-                    startDevilLaugh();
+                    // First reveal the fragment
+                    playSound(SHELL_SOUNDS.fragment);
                     window.GameApp.revealFragment(7); // Reveals "T"
                     window.GameApp.showNotification('🔥 The devil laughs at your failures! 🔥');
+
+                    // Then start the devil laughing (which enables the knife for fragment 8)
+                    setTimeout(() => {
+                        startDevilLaugh();
+                    }, 500);
                 }, 1000);
             }
         }

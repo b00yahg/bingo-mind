@@ -820,19 +820,63 @@ body::before {
     text-align: center;
     margin-bottom: 30px;
     position: relative;
-    background: repeating-linear-gradient(
-        45deg,
-        rgba(255, 200, 200, 0.1) 0px,
-        rgba(255, 200, 200, 0.1) 10px,
-        rgba(200, 255, 200, 0.1) 10px,
-        rgba(200, 255, 200, 0.1) 20px,
-        rgba(200, 200, 255, 0.1) 20px,
-        rgba(200, 200, 255, 0.1) 30px
-    );
-    border: 3px dashed rgba(255, 100, 100, 0.3);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
+    /* Torn paper background with crayon texture */
+    background:
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 200, 200, 0.15) 0px,
+            rgba(255, 200, 200, 0.15) 10px,
+            rgba(200, 255, 200, 0.15) 10px,
+            rgba(200, 255, 200, 0.15) 20px,
+            rgba(200, 200, 255, 0.15) 20px,
+            rgba(200, 200, 255, 0.15) 30px
+        ),
+        linear-gradient(
+            135deg,
+            #f5f0e8 0%,
+            #ebe6dd 25%,
+            #f0ebe3 50%,
+            #e8e3da 75%,
+            #f5f0e8 100%
+        );
+    /* Rough torn edges effect */
+    border: none;
+    padding: 35px;
+    border-radius: 8px;
+    /* Torn paper shadow */
+    box-shadow:
+        inset 0 0 40px rgba(0, 0, 0, 0.15),
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 8px 20px rgba(0, 0, 0, 0.2);
+    /* Slightly rotated for "thrown down" look */
+    transform: rotate(-0.5deg);
+    /* Paper texture overlay using pseudo-element */
+}
+
+.devil-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px
+        );
+    pointer-events: none;
+    border-radius: 8px;
 }
 
 .devil {
@@ -861,7 +905,7 @@ body::before {
 
 .devil.stabbed {
     filter: grayscale(1) brightness(0.5);
-    transform: rotate(90deg);
+    opacity: 0.8;
 }
 
 .knife {
@@ -1000,16 +1044,17 @@ body::before {
 
 .angel-corner {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 20px;
-    height: 20px;
+    bottom: 80px;
+    left: 15px;
+    width: 30px;
+    height: 30px;
+    z-index: 10;
 }
 
 .angel {
-    font-size: 16px !important;
-    line-height: 16px;
-    opacity: 0.4;
+    font-size: 24px !important;
+    line-height: 24px;
+    opacity: 0.5;
     cursor: pointer;
     transition: all 0.3s ease;
     display: block;
@@ -1017,17 +1062,17 @@ body::before {
 
 /* Force angel img size when img has the angel class directly */
 img.angel {
-    width: 16px !important;
-    height: 16px !important;
-    max-width: 16px !important;
-    max-height: 16px !important;
+    width: 24px !important;
+    height: 24px !important;
+    max-width: 24px !important;
+    max-height: 24px !important;
     object-fit: contain;
     display: block;
 }
 
 .angel img {
-    width: 16px !important;
-    height: 16px !important;
+    width: 24px !important;
+    height: 24px !important;
     object-fit: contain;
     display: block;
 }
