@@ -13,14 +13,14 @@ const ThreadsGame = {
         puzzle3Complete: false
     },
     fortunes: [
-        { text: 'YOU WIN', color: '#ff00ff', hint: 'surface' },
-        { text: 'SEVEN IS LUCKY', color: '#00ffff', hint: 'hidden' },
-        { text: 'A SECRET THREAD', color: '#ffff00', hint: 'thread' },
-        { text: 'BACKWARDS REVEALS ALL', color: '#ff3366', hint: 'thread' },
-        { text: 'THE FOOL WAITS', color: '#00ff88', hint: 'lore' },
-        { text: 'WHAT RETURNS', color: '#ff8800', hint: 'lore' },
-        { text: 'NIW UOY', color: '#8800ff', hint: 'reverse' },  // "You Win" backwards
-        { text: 'THIRTEEN IS LUCKY', color: '#ff0088', hint: 'red-herring' }
+        { text: 'YOU WIN', color: '#ff00ff', hint: 'surface', message: '🎉 The wheel smiles upon you!' },
+        { text: 'SEVEN SPINS THEN STAY', color: '#00ffff', hint: 'hidden', message: '🍀 Lucky seven... if you know when to wait...' },
+        { text: 'PULL THE THREAD AWAY', color: '#ffff00', hint: 'thread', message: '🧵 Some threads dangle... waiting to be tugged...' },
+        { text: 'REVERSE THE TURN', color: '#ff3366', hint: 'thread', message: '⏪ What spins forward can spin back... with the right words...' },
+        { text: 'THE FOOL KNOWS', color: '#00ff88', hint: 'lore', message: '🤡 The jester\'s wisdom hides in plain sight...' },
+        { text: 'FATE BENDS TO WORDS', color: '#ff8800', hint: 'lore', message: '📜 Commands can change destiny itself...' },
+        { text: 'NIW UOY', color: '#8800ff', hint: 'reverse', message: '💀 Something feels... wrong...' },
+        { text: 'WHAT GOES AROUND', color: '#ff0088', hint: 'lore', message: '🎡 The wheel always returns to where it began...' }
     ]
 };
 
@@ -274,8 +274,8 @@ function getLandedFortune() {
 function handleFortuneResult(fortune) {
     console.log('🎲 Handling fortune:', fortune.text);
 
-    // Simple notification instead of popup
-    window.GameApp.showNotification(`🎡 ${fortune.text}`);
+    // Show the cryptic rhyming message
+    window.GameApp.showNotification(fortune.message || `🎡 ${fortune.text}`);
 
     // PUZZLE 1: Land on "YOU WIN" (SURFACE)
     if (!ThreadsGame.puzzles.puzzle1Complete && fortune.text === 'YOU WIN') {
@@ -303,9 +303,9 @@ function handleFortuneResult(fortune) {
         }, 5000);
     }
 
-    // Show thread for certain fortunes
-    if ((fortune.text === 'A SECRET THREAD' || fortune.text === 'BACKWARDS REVEALS ALL') && !ThreadsGame.threadDiscovered) {
-        showThread();
+    // Show thread for certain fortunes (updated fortune names)
+    if ((fortune.text === 'PULL THE THREAD AWAY' || fortune.text === 'REVERSE THE TURN') && !ThreadsGame.threadDiscovered) {
+        enableThreadDrag();
     }
 
     // CREEPY EFFECT: Landing on "NIW UOY" without using /reverse
@@ -430,18 +430,71 @@ function triggerCreepyEffect() {
     }, 500);
 }
 
-// Show thread
-function showThread() {
-    ThreadsGame.threadDiscovered = true;
-    const thread = document.getElementById('wheel-thread');
-    if (thread) {
-        thread.classList.remove('hidden');
+// Enable draggable title mechanic
+function enableThreadDrag() {
+    if (ThreadsGame.threadDiscovered) return; // Already enabled
 
-        thread.addEventListener('click', () => {
-            window.GameApp.showNotification('A command prompt appears...');
-            document.getElementById('command-prompt').classList.remove('hidden');
-            document.getElementById('cmd-input').focus();
-        }, {once: true});
+    ThreadsGame.threadDiscovered = true;
+    const title = document.querySelector('#threads-game .game-header h2');
+
+    if (title) {
+        title.style.cursor = 'grab';
+        title.style.userSelect = 'none';
+        title.style.transition = 'all 0.3s ease';
+
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+
+        title.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            title.style.cursor = 'grabbing';
+            title.style.position = 'relative';
+
+            startX = e.clientX;
+            startY = e.clientY;
+            initialX = title.offsetLeft;
+            initialY = title.offsetTop;
+
+            window.GameApp.showNotification('🧵 The thread pulls...');
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+
+            title.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+            // If dragged far enough (50px), reveal command prompt
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            if (distance > 50) {
+                isDragging = false;
+                title.style.cursor = 'default';
+
+                // Snap back with animation
+                title.style.transform = 'translate(0, 0)';
+
+                // Reveal command prompt
+                window.GameApp.showNotification('🧵 The thread unravels... A command prompt appears!');
+                setTimeout(() => {
+                    document.getElementById('command-prompt').classList.remove('hidden');
+                    document.getElementById('cmd-input').focus();
+                }, 500);
+
+                // Remove drag ability
+                title.style.cursor = 'default';
+                title.removeEventListener('mousedown', () => {});
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                title.style.cursor = 'grab';
+                title.style.transform = 'translate(0, 0)';
+            }
+        });
     }
 
     saveThreadsProgress();
@@ -452,11 +505,11 @@ function showThreadHint() {
     const hintBox = document.getElementById('hint-threads-3');
     if (hintBox) {
         hintBox.innerHTML = `
-            <strong>🧵 Hidden Puzzle:</strong> A thread dangles from the wheel's edge.
-            Pull it to reveal a command prompt. Commands can reverse what fate has spun.
+            <strong>🧵 Hidden Puzzle:</strong> Some threads are woven into titles themselves.
+            Pull at THE THREADS to unravel a command prompt. Commands can reverse what fate has spun.
             Type the right words, and backward it'll run!
             <br><br>
-            <em style="color: #ff3366;">Look for the red thread at the bottom-right...</em>
+            <em style="color: #ff3366;">Try dragging "THE THREADS" title...</em>
         `;
         hintBox.classList.add('visible');
     }
@@ -477,13 +530,13 @@ function showSevenHint() {
 
 // Check which hints to show
 function checkHintsToShow() {
-    if (ThreadsGame.spinHistory.includes('SEVEN IS LUCKY') && !window.GameApp.hasFragment(4)) {
+    if (ThreadsGame.spinHistory.includes('SEVEN SPINS THEN STAY') && !window.GameApp.hasFragment(4)) {
         showSevenHint();
     }
 
-    if ((ThreadsGame.spinHistory.includes('A SECRET THREAD') || ThreadsGame.spinHistory.includes('BACKWARDS REVEALS ALL')) && !ThreadsGame.threadDiscovered) {
+    if ((ThreadsGame.spinHistory.includes('PULL THE THREAD AWAY') || ThreadsGame.spinHistory.includes('REVERSE THE TURN')) && !ThreadsGame.threadDiscovered) {
         showThreadHint();
-        showThread();
+        enableThreadDrag();
     }
 }
 

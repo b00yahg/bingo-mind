@@ -774,27 +774,6 @@ body::before {
     background: #222;
 }
 
-.red-thread {
-    position: absolute;
-    bottom: 5px;
-    left: 5px;
-    width: 30px;
-    height: auto;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-    filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.5));
-}
-
-.red-thread:hover {
-    opacity: 1;
-}
-
-.red-thread.hidden {
-    display: none;
-}
-
 /* Command Prompt */
 .command-prompt {
     max-width: 500px;
