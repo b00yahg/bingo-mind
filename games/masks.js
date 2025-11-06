@@ -227,14 +227,14 @@ function selectShell(index) {
             MasksGame.losses++;
             MasksGame.consecutiveLosses++;
 
-            console.log('🎭 Loss! Consecutive losses:', MasksGame.consecutiveLosses);
+            console.log('🎭 Loss! Total losses:', MasksGame.losses);
 
             playSound(SHELL_SOUNDS.lose);
             window.GameApp.showNotification('❌ The devil deceived you!');
 
-            // PUZZLE 2: Lose 3 times in a row (HIDDEN)
-            if (!MasksGame.puzzles.puzzle2Complete && MasksGame.consecutiveLosses >= 3) {
-                console.log('🎭 THREE LOSSES IN A ROW! Unlocking fragment 7...');
+            // PUZZLE 2: Lose 3 times total (HIDDEN)
+            if (!MasksGame.puzzles.puzzle2Complete && MasksGame.losses >= 3) {
+                console.log('🎭 THREE LOSSES TOTAL! Unlocking fragment 7...');
                 MasksGame.puzzles.puzzle2Complete = true;
 
                 setTimeout(() => {
