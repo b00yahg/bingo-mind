@@ -318,28 +318,92 @@ function showKnifeHint() {
     const hintBox = document.getElementById('hint-masks-3');
     hintBox.innerHTML = `
         <strong>🔪 The Final Strike:</strong> The devil's guard is down while he laughs.
-        Click the knife, then strike him down to reveal the final memory fragment!
+        Click and drag the knife to the devil to strike him down and reveal the final memory fragment!
         <br><br>
-        <em style="color: #ff3366;">The knife awaits your command...</em>
+        <em style="color: #ff3366;">Click the knife, then drag it to the devil...</em>
     `;
     hintBox.classList.add('visible');
 }
 
-// Activate knife
-function activateKnife() {
+// Activate knife with click and drag
+function activateKnife(e) {
     if (MasksGame.knifeActive || !MasksGame.devilLaughing) return;
 
-    MasksGame.knifeActive = true;
-    document.body.style.cursor = `url('assets/images/weapons/knife_cursor.png'), crosshair`;
+    const knife = document.getElementById('knife');
+    if (!knife) return;
 
-    window.GameApp.showNotification('Knife equipped! Strike the devil!');
+    // Start dragging
+    let isDragging = false;
+    let draggedKnife = null;
 
-    // Devil becomes targetable
-    const devil = document.getElementById('devil');
-    if (devil) {
-        devil.style.cursor = 'crosshair';
-        devil.addEventListener('click', stabDevil, {once: true});
+    function startDrag(event) {
+        event.preventDefault();
+        isDragging = true;
+
+        // Create a draggable knife element
+        draggedKnife = document.createElement('div');
+        draggedKnife.innerHTML = '🔪';
+        draggedKnife.style.cssText = `
+            position: fixed;
+            font-size: 3em;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        `;
+        document.body.appendChild(draggedKnife);
+
+        window.GameApp.showNotification('Drag the knife to the devil!');
+
+        document.addEventListener('mousemove', dragKnife);
+        document.addEventListener('mouseup', dropKnife);
     }
+
+    function dragKnife(event) {
+        if (!isDragging || !draggedKnife) return;
+
+        draggedKnife.style.left = event.clientX + 'px';
+        draggedKnife.style.top = event.clientY + 'px';
+    }
+
+    function dropKnife(event) {
+        if (!isDragging) return;
+
+        isDragging = false;
+
+        // Check if dropped on devil
+        const devil = document.getElementById('devil');
+        if (devil) {
+            const devilRect = devil.getBoundingClientRect();
+            const dropX = event.clientX;
+            const dropY = event.clientY;
+
+            if (
+                dropX >= devilRect.left &&
+                dropX <= devilRect.right &&
+                dropY >= devilRect.top &&
+                dropY <= devilRect.bottom
+            ) {
+                // Successfully stabbed!
+                MasksGame.knifeActive = true;
+                stabDevil();
+            } else {
+                window.GameApp.showNotification('You missed! Try again.');
+                // Reset for another attempt
+                MasksGame.knifeActive = false;
+            }
+        }
+
+        // Clean up
+        if (draggedKnife) {
+            draggedKnife.remove();
+            draggedKnife = null;
+        }
+
+        document.removeEventListener('mousemove', dragKnife);
+        document.removeEventListener('mouseup', dropKnife);
+    }
+
+    knife.addEventListener('mousedown', startDrag);
 }
 
 // Stab the devil

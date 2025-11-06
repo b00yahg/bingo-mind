@@ -6,24 +6,63 @@
 }
 
 :root {
-    --primary-bg: #000033;
-    --secondary-bg: #1a0033;
-    --accent-neon: #ff00ff;
-    --accent-cyan: #00ffff;
-    --accent-yellow: #ffff00;
-    --accent-red: #ff0033;
+    /* Amazing Digital Circus Color Palette */
+    --primary-bg: #0a0033;
+    --secondary-bg: #1a0a4d;
+    --circus-purple: #6b2cf5;
+    --circus-pink: #ff00ff;
+    --circus-cyan: #00ffff;
+    --circus-yellow: #ffff00;
+    --circus-red: #ff3366;
+    --circus-green: #00ff88;
+    --circus-orange: #ff8800;
+
+    --accent-neon: var(--circus-pink);
+    --accent-cyan: var(--circus-cyan);
+    --accent-yellow: var(--circus-yellow);
+    --accent-red: var(--circus-red);
     --text-primary: #ffffff;
-    --text-glow: #00ffff;
-    --border-color: #ff00ff;
+    --text-glow: var(--circus-cyan);
+    --border-color: var(--circus-pink);
+
+    /* Circus-specific */
+    --stripe-color-1: var(--circus-pink);
+    --stripe-color-2: var(--circus-cyan);
 }
 
 body {
     font-family: 'Courier New', monospace;
-    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+    background:
+        linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+}
+
+/* Colorful circus radial stripes overlay */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        repeating-conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 0deg,
+            transparent 10deg,
+            rgba(255, 0, 255, 0.05) 10deg,
+            rgba(255, 0, 255, 0.05) 20deg,
+            transparent 20deg,
+            transparent 30deg,
+            rgba(0, 255, 255, 0.05) 30deg,
+            rgba(0, 255, 255, 0.05) 40deg
+        );
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
 }
 
 body::before {
@@ -246,19 +285,52 @@ body::before {
 }
 
 .game-card {
-    background: linear-gradient(135deg, rgba(255, 0, 255, 0.2) 0%, rgba(0, 255, 255, 0.2) 100%);
-    border: 3px solid var(--accent-neon);
+    background:
+        linear-gradient(135deg, rgba(255, 0, 255, 0.3) 0%, rgba(0, 255, 255, 0.3) 100%);
+    border: 5px solid;
+    border-image: linear-gradient(45deg, var(--circus-pink), var(--circus-cyan), var(--circus-yellow)) 1;
     padding: 30px;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 0 15px var(--accent-neon);
+    box-shadow:
+        0 0 20px var(--circus-pink),
+        0 0 40px var(--circus-cyan),
+        inset 0 0 30px rgba(255, 0, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
 }
 
 .game-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 0 30px var(--accent-neon);
-    border-color: var(--accent-cyan);
+    transform: translateY(-10px) scale(1.05);
+    box-shadow:
+        0 0 30px var(--circus-pink),
+        0 0 60px var(--circus-cyan),
+        0 0 90px var(--circus-yellow),
+        inset 0 0 50px rgba(255, 0, 255, 0.3);
+    border-image: linear-gradient(45deg, var(--circus-yellow), var(--circus-pink), var(--circus-cyan)) 1;
 }
 
 .game-icon {
@@ -290,14 +362,18 @@ body::before {
     opacity: 0.9;
 }
 
-/* Buttons */
+/* Buttons - Circus Style */
 .btn-primary,
 .btn-game,
 .btn-back,
 .btn-spin {
-    background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-cyan) 100%);
-    color: #000;
-    border: none;
+    background:
+        linear-gradient(135deg,
+            var(--circus-pink) 0%,
+            var(--circus-purple) 50%,
+            var(--circus-cyan) 100%);
+    color: #fff;
+    border: 3px solid var(--circus-yellow);
     padding: 12px 30px;
     font-family: 'Courier New', monospace;
     font-weight: bold;
@@ -306,15 +382,30 @@ body::before {
     text-transform: uppercase;
     letter-spacing: 2px;
     transition: all 0.3s ease;
-    box-shadow: 0 0 15px var(--accent-neon);
+    box-shadow:
+        0 0 20px var(--circus-pink),
+        0 0 30px var(--circus-cyan),
+        0 4px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .btn-primary:hover,
 .btn-game:hover,
 .btn-back:hover,
 .btn-spin:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px var(--accent-cyan);
+    transform: scale(1.1) translateY(-2px);
+    box-shadow:
+        0 0 30px var(--circus-yellow),
+        0 0 50px var(--circus-pink),
+        0 0 70px var(--circus-cyan),
+        0 8px 25px rgba(0, 0, 0, 0.6);
+    border-color: var(--circus-pink);
+    background:
+        linear-gradient(135deg,
+            var(--circus-cyan) 0%,
+            var(--circus-purple) 50%,
+            var(--circus-pink) 100%);
 }
 
 .btn-large {

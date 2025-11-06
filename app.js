@@ -248,7 +248,13 @@ function checkFileUnlock(fragmentNumber) {
         const file = FILE_UNLOCKS[fragmentNumber];
         if (!gameState.unlockedFiles.includes(file)) {
             gameState.unlockedFiles.push(file);
-            showNotification(`🔓 FILE UNLOCKED: ${file}`);
+            showNotification(`🔓 FILE UNLOCKED: ${file} - Downloading...`);
+
+            // Auto-download the file after a brief delay
+            setTimeout(() => {
+                downloadFile(file);
+                showNotification(`📄 ${file} downloaded to your browser!`);
+            }, 1500);
         }
     }
 }
