@@ -31,7 +31,8 @@
 }
 
 body {
-    font-family: 'Courier New', monospace;
+    font-family: 'Fredoka', 'Bubblegum Sans', 'Comic Sans MS', cursive, sans-serif;
+    font-weight: 600;
     background:
         linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
     color: var(--text-primary);

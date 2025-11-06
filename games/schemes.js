@@ -7,7 +7,10 @@ const SchemesGame = {
     round: 0,
     isShowingPattern: false,
     isPlayerTurn: false,
+    inGameMode: false, // NEW: Track if in active game
     score: 0,
+    freeClickCount: 0, // NEW: Track clicks outside game for 666 puzzle
+    lastFreeClickTime: 0, // NEW: Track timing for 666 puzzle
     devilSequence: [], // For 666 puzzle tracking
     puzzles: {
         puzzle1Complete: false,
@@ -46,11 +49,6 @@ function initSchemesGame() {
     }
 
     updateDisplay();
-
-    // Check if Fragment #1 was collected to show hint #2
-    if (window.GameApp && window.GameApp.hasFragment(1) && !window.GameApp.hasFragment(2)) {
-        showDevilHint();
-    }
 }
 
 // Generate balloon buttons
@@ -86,8 +84,14 @@ function createBalloonButton(color, index) {
     balloon.style.animationDelay = `${index * 0.15}s`;
 
     balloon.addEventListener('click', () => {
-        if (SchemesGame.isPlayerTurn && !SchemesGame.isShowingPattern) {
-            handlePlayerClick(color, balloon);
+        if (SchemesGame.inGameMode) {
+            // In game mode: Simon Says logic
+            if (SchemesGame.isPlayerTurn && !SchemesGame.isShowingPattern) {
+                handlePlayerClick(color, balloon);
+            }
+        } else {
+            // Outside game mode: Free clicking for 666 puzzle
+            handleFreeClick(color, balloon);
         }
     });
 
@@ -97,6 +101,7 @@ function createBalloonButton(color, index) {
 
 // Start new game
 function startNewGame() {
+    SchemesGame.inGameMode = true;
     SchemesGame.pattern = [];
     SchemesGame.playerInput = [];
     SchemesGame.round = 0;
@@ -153,7 +158,7 @@ function flashBalloon(color) {
     }
 }
 
-// Handle player click
+// Handle player click (during game)
 function handlePlayerClick(color, balloon) {
     SchemesGame.playerInput.push(color);
 
@@ -164,17 +169,11 @@ function handlePlayerClick(color, balloon) {
         balloon.classList.remove('flash');
     }, 300);
 
-    // Track for 666 puzzle
-    SchemesGame.devilSequence.push({
-        time: Date.now(),
-        color: color
-    });
-
     // Check if pattern matches so far
     const currentIndex = SchemesGame.playerInput.length - 1;
 
     if (SchemesGame.playerInput[currentIndex] !== SchemesGame.pattern[currentIndex]) {
-        // Wrong!
+        // Wrong! Reset progress
         gameOver();
         return;
     }
@@ -184,8 +183,24 @@ function handlePlayerClick(color, balloon) {
         // Correct!
         patternComplete();
     }
+}
 
-    // Check 666 puzzle
+// Handle free click (outside game, for 666 puzzle)
+function handleFreeClick(color, balloon) {
+    // Visual feedback
+    balloon.classList.add('flash');
+    playSound(SOUNDS.balloonPop);
+    setTimeout(() => {
+        balloon.classList.remove('flash');
+    }, 300);
+
+    // Track for 666 puzzle
+    SchemesGame.freeClickCount++;
+    SchemesGame.devilSequence.push({
+        time: Date.now(),
+        color: color
+    });
+
     check666Puzzle();
 }
 
@@ -205,7 +220,6 @@ function patternComplete() {
         SchemesGame.puzzles.puzzle1Complete = true;
         setTimeout(() => {
             window.GameApp.revealFragment(1); // Reveals "-47"
-            showDevilHint();
         }, 500);
     }
 
@@ -215,13 +229,22 @@ function patternComplete() {
     }, 1500);
 }
 
-// Game over
+// Game over - RESET PROGRESS
 function gameOver() {
     SchemesGame.isPlayerTurn = false;
+    SchemesGame.inGameMode = false;
     playSound(SOUNDS.wrongBuzzer);
 
-    document.getElementById('game-status').textContent = `Wrong! You reached round ${SchemesGame.round}. Try again!`;
-    disableAllBalloons();
+    document.getElementById('game-status').textContent = `Wrong! You reached round ${SchemesGame.round}. Your progress has been reset.`;
+
+    // RESET SCORE - this is the key fix!
+    SchemesGame.score = 0;
+    SchemesGame.round = 0;
+    SchemesGame.pattern = [];
+    SchemesGame.playerInput = [];
+
+    updateDisplay();
+    saveSchemesProgress();
 
     // Reset button
     setTimeout(() => {
@@ -229,7 +252,7 @@ function gameOver() {
     }, 2000);
 }
 
-// Check 666 puzzle
+// Check 666 puzzle (outside of game)
 function check666Puzzle() {
     if (SchemesGame.puzzles.puzzle2Complete || !window.GameApp.hasFragment(1)) return;
 
@@ -266,25 +289,6 @@ function check666Puzzle() {
     }
 }
 
-// Show devil hint
-function showDevilHint() {
-    const hintBox = document.getElementById('hint-schemes-2');
-    hintBox.innerHTML = `
-        <strong>😈 Hidden Puzzle:</strong> The high score shows 666. The number of the beast has power.
-        What if you clicked balloons in a pattern that honored this number?
-        Six clicks. Wait six seconds. Six more clicks. Wait six seconds. Six final clicks.
-        <br><br>
-        <em style="color: #ff3366;">The devil rewards those who know his signature.</em>
-    `;
-    hintBox.classList.add('visible');
-
-    // Make high score pulse
-    const highScore = document.getElementById('high-score').parentElement;
-    if (highScore) {
-        highScore.style.animation = 'pulse-glow 1s ease-in-out infinite';
-    }
-}
-
 // Utility functions
 function disableAllBalloons() {
     document.querySelectorAll('.balloon').forEach(b => {
@@ -305,8 +309,8 @@ function updateDisplay() {
     const roundEl = document.getElementById('balloon-round');
     const scoreEl = document.getElementById('balloon-score');
 
-    if (statusEl && SchemesGame.round === 0) {
-        statusEl.textContent = "Click 'Start Game' to begin!";
+    if (statusEl && SchemesGame.round === 0 && !SchemesGame.inGameMode) {
+        statusEl.textContent = "Click 'Start Game' to begin! (Or click balloons freely...)";
     }
     if (roundEl) roundEl.textContent = SchemesGame.round;
     if (scoreEl) scoreEl.textContent = SchemesGame.score;

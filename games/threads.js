@@ -72,7 +72,7 @@ function initThreadsGame() {
     checkHintsToShow();
 }
 
-// Draw the fortune wheel (simplified - just colors, fortunes shown in popups)
+// Draw the fortune wheel (with text on segments)
 function drawWheel(rotation = 0) {
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -99,15 +99,30 @@ function drawWheel(rotation = 0) {
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Draw number on each segment
+        // Draw fortune text on each segment
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(startAngle + anglePerSegment / 2);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 24px Courier New';
-        ctx.fillText((i + 1), radius * 0.7, 0);
+        ctx.font = 'bold 13px Courier New';
+        ctx.shadowColor = '#fff';
+        ctx.shadowBlur = 3;
+
+        // Split text into multiple lines if needed
+        const text = ThreadsGame.fortunes[i].text;
+        const words = text.split(' ');
+        if (words.length > 2) {
+            ctx.fillText(words.slice(0, 2).join(' '), radius * 0.65, -8);
+            ctx.fillText(words.slice(2).join(' '), radius * 0.65, 8);
+        } else if (words.length === 2) {
+            ctx.fillText(words[0], radius * 0.65, -6);
+            ctx.fillText(words[1], radius * 0.65, 6);
+        } else {
+            ctx.fillText(text, radius * 0.65, 0);
+        }
+
         ctx.restore();
     }
 
@@ -120,11 +135,13 @@ function drawWheel(rotation = 0) {
     ctx.lineWidth = 4;
     ctx.stroke();
 
-    // Draw "SPIN" text in center
+    // Draw "FATE" text in center
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 20px Courier New';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.shadowColor = '#ff00ff';
+    ctx.shadowBlur = 5;
     ctx.fillText('FATE', centerX, centerY);
 
     // Draw pointer at top
@@ -213,8 +230,8 @@ function getLandedFortune() {
 
 // Handle fortune result
 function handleFortuneResult(fortune) {
-    // Show fortune in popup
-    showFortunePopup(fortune);
+    // Simple notification instead of popup
+    window.GameApp.showNotification(`🎡 ${fortune.text}`);
 
     // PUZZLE 1: Land on "YOU WIN" (SURFACE)
     if (!ThreadsGame.puzzles.puzzle1Complete && fortune.text === 'YOU WIN') {
@@ -226,11 +243,6 @@ function handleFortuneResult(fortune) {
     }
 
     // PUZZLE 2: Spin exactly 7 times then wait (HIDDEN)
-    if (!ThreadsGame.puzzles.puzzle2Complete && fortune.text === 'SEVEN IS LUCKY') {
-        showSevenHint();
-    }
-
-    // Check for 7 spins completion
     if (!ThreadsGame.puzzles.puzzle2Complete && ThreadsGame.spinCount === 7) {
         // Start timer to check if they don't spin again
         setTimeout(() => {
@@ -243,9 +255,8 @@ function handleFortuneResult(fortune) {
         }, 5000);
     }
 
-    // Show thread hint
+    // Show thread for certain fortunes
     if ((fortune.text === 'A SECRET THREAD' || fortune.text === 'BACKWARDS REVEALS ALL') && !ThreadsGame.threadDiscovered) {
-        showThreadHint();
         showThread();
     }
 
@@ -254,7 +265,6 @@ function handleFortuneResult(fortune) {
         triggerCreepyEffect();
     }
 
-    checkHintsToShow();
     saveThreadsProgress();
 }
 
