@@ -822,7 +822,7 @@ body::before {
     position: relative;
     /* Custom paper background - will use your image! */
     background:
-        url('../images/backgrounds/paper.png'),
+        url('assets/images/backgrounds/paper.png'),
         linear-gradient(
             135deg,
             #f5f0e8 0%,
