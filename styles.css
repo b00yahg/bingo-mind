@@ -936,11 +936,10 @@ body::before {
     font-size: 1.4em;
     color: var(--accent-red);
     margin-bottom: 20px;
-    font-family: 'Fredoka', cursive;
+    font-family: 'Permanent Marker', cursive;
     text-align: center;
     letter-spacing: 0px;
     font-weight: 400;
-    font-style: italic;
     transform: rotate(-1deg);
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
     line-height: 1.6;
