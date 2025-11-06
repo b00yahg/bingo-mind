@@ -84,7 +84,7 @@ function createBalloonButton(color, index) {
     };
     balloon.appendChild(img);
 
-    balloon.style.animationDelay = `${index * 0.15}s`;
+    balloon.style.animationDelay = `${index * 0.1}s`;
 
     balloon.addEventListener('click', () => {
         if (SchemesGame.inGameMode) {
@@ -125,7 +125,7 @@ function nextRound() {
     // Show pattern to player
     setTimeout(() => {
         showPattern();
-    }, 1000);
+    }, 700);
 }
 
 // Show pattern to player
@@ -137,9 +137,9 @@ async function showPattern() {
     disableAllBalloons();
 
     for (let i = 0; i < SchemesGame.pattern.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 600));
+        await new Promise(resolve => setTimeout(resolve, 450));
         flashBalloon(SchemesGame.pattern[i]);
-        await new Promise(resolve => setTimeout(resolve, 600));
+        await new Promise(resolve => setTimeout(resolve, 450));
     }
 
     SchemesGame.isShowingPattern = false;
@@ -226,7 +226,7 @@ function patternComplete() {
     // Next round
     setTimeout(() => {
         nextRound();
-    }, 1500);
+    }, 1000);
 }
 
 // Game over - RESET PROGRESS

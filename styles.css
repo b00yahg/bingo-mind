@@ -683,7 +683,7 @@ body::before {
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    animation: balloon-float 3s ease-in-out infinite;
+    animation: balloon-float 2s ease-in-out infinite;
     position: relative;
 }
 
