@@ -102,6 +102,11 @@ function showBallBriefly() {
 
     window.GameApp.showNotification('Remember which shell has the ball!');
 
+    // Play shuffle sound slightly early for better timing
+    setTimeout(() => {
+        playSound(SHELL_SOUNDS.shuffle);
+    }, 1700);
+
     // Wait 2 seconds then shuffle
     setTimeout(() => {
         correctShell.classList.remove('lifted');
@@ -119,7 +124,6 @@ async function shuffleShells() {
     const devil = document.getElementById('devil');
     if (devil) devil.style.animation = 'devil-shuffle 2s ease-in-out';
 
-    playSound(SHELL_SOUNDS.shuffle);
     window.GameApp.showNotification('The devil shuffles...');
 
     const shells = document.querySelectorAll('.shell');
@@ -280,6 +284,12 @@ function startDevilLaugh() {
         if (devilImg) {
             devilImg.src = 'assets/images/characters/devil_laughing.png';
         }
+    }
+
+    // Cut background music when devil laugh starts
+    const bgMusic = document.getElementById('background-music');
+    if (bgMusic) {
+        bgMusic.pause();
     }
 
     // Loop the devil laugh sound
@@ -462,9 +472,36 @@ function stabDevil() {
         SHELL_SOUNDS.devilLaugh.currentTime = 0;
         SHELL_SOUNDS.devilLaugh.loop = false;
 
+        // Play stab sound LOUDER - IMMEDIATELY
+        SHELL_SOUNDS.stab.volume = 0.9;
+        playSound(SHELL_SOUNDS.stab);
+
+        // DRAMATIC WHITE FLASH - Faster and brighter
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            pointer-events: none;
+            animation: jumpscareFlash 0.1s ease-out;
+        `;
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 100);
+
+        // SCREEN SHAKE EFFECT
+        const body = document.body;
+        body.style.animation = 'screenShake 0.3s ease-in-out';
+        setTimeout(() => {
+            body.style.animation = '';
+        }, 300);
+
         const devil = document.getElementById('devil');
         if (devil) {
-            // Remove transition for instant effect
+            // Remove transition for INSTANT effect
             devil.style.transition = 'none';
             devil.classList.remove('laughing');
             devil.classList.add('stabbed');
@@ -476,25 +513,11 @@ function stabDevil() {
             }
         }
 
-        // JUMPSCARE FLASH EFFECT
-        const flash = document.createElement('div');
-        flash.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 9999;
-            pointer-events: none;
-            animation: jumpscareFlash 0.2s ease-out;
-        `;
-        document.body.appendChild(flash);
-        setTimeout(() => flash.remove(), 200);
-
-        // Play stab sound LOUDER
-        SHELL_SOUNDS.stab.volume = 0.8;
-        playSound(SHELL_SOUNDS.stab);
+        // Restart background music after stab
+        const bgMusic = document.getElementById('background-music');
+        if (bgMusic) {
+            bgMusic.play().catch(e => console.log('Failed to restart music:', e));
+        }
 
         document.body.style.cursor = 'default';
 
