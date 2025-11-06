@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINGO'S MIND - Every Thought Hides a Secret</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Hub -->
+    <div id="hub" class="screen active">
+        <div class="header glitch-container">
+            <h1 class="glitch" data-text="BINGO'S MIND">BINGO'S MIND</h1>
+            <p class="tagline">"Every Thought Hides a Secret"</p>
+        </div>
+
+        <!-- Memory Fragment Tracker -->
+        <div class="fragment-tracker">
+            <div class="tracker-header">
+                <span>🧠 MEMORY FRAGMENTS RECOVERED: <span id="fragment-count">0/8</span></span>
+                <button id="view-fragments-btn" class="btn-primary">VIEW FRAGMENTS</button>
+            </div>
+            <div class="fragment-slots">
+                <div class="fragment-slot" data-fragment="1">_</div>
+                <div class="fragment-slot" data-fragment="2">_</div>
+                <div class="fragment-slot" data-fragment="3">_</div>
+                <div class="fragment-slot" data-fragment="4">_</div>
+                <div class="fragment-slot" data-fragment="5">_</div>
+                <div class="fragment-slot" data-fragment="6">_</div>
+                <div class="fragment-slot" data-fragment="7">_</div>
+                <div class="fragment-slot" data-fragment="8">_</div>
+            </div>
+        </div>
+
+        <!-- Starting Clue -->
+        <div class="consciousness-bubble">
+            <div class="thought-bubble">
+                <p class="pulse-text">
+                    "Welcome to the circus inside my head,<br>
+                    Where memories hide and truths aren't said.<br>
+                    Eight fragments scattered through mental games,<br>
+                    Some obvious wins, others need secret names.<br><br>
+                    Play my SCHEMES to understand my plans,<br>
+                    Follow the THREADS that tie these strands,<br>
+                    Unmask the TRUTHS behind what you see,<br>
+                    And maybe you'll discover how to free me.<br><br>
+                    Surface rewards come from playing right,<br>
+                    But deeper secrets hide from sight."
+                </p>
+            </div>
+        </div>
+
+        <!-- Game Selection -->
+        <div class="games-grid">
+            <div class="game-card" id="schemes-card">
+                <div class="game-icon">🎈🎈🎈</div>
+                <h3>THE SCHEMES</h3>
+                <p class="game-subtitle">"His Plans"</p>
+                <p class="game-desc">Thoughts Rising, Ready to Pop</p>
+                <button class="btn-game" data-game="schemes">ENTER</button>
+            </div>
+
+            <div class="game-card" id="threads-card">
+                <div class="game-icon">🎡</div>
+                <h3>THE THREADS</h3>
+                <p class="game-subtitle">"His Fate"</p>
+                <p class="game-desc">Fate Spins on a Wheel of Chances</p>
+                <button class="btn-game" data-game="threads">ENTER</button>
+            </div>
+
+            <div class="game-card" id="masks-card">
+                <div class="game-icon">🥥🥥🥥</div>
+                <h3>THE MASKS</h3>
+                <p class="game-subtitle">"His Truths"</p>
+                <p class="game-desc">Three Faces Hide One Truth</p>
+                <button class="btn-game" data-game="masks">ENTER</button>
+            </div>
+        </div>
+
+        <!-- Bingo's Portrait -->
+        <div class="portrait-container">
+            <div id="bingo-portrait" class="portrait">
+                <div class="portrait-frame">
+                    <div class="portrait-image">🤡</div>
+                    <p class="portrait-caption">"The Fool's mind is a labyrinth of secrets..."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fragment Viewer Modal -->
+    <div id="fragment-viewer" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>RECOVERED MEMORY FRAGMENTS</h2>
+
+            <div class="fragment-display">
+                <div class="fragment-group">
+                    <h3>SAFE CODE:</h3>
+                    <div class="code-slots">
+                        <span class="code-char" data-code-index="0">?</span>
+                        <span class="code-char" data-code-index="1">?</span>
+                        <span class="code-char" data-code-index="2">?</span>
+                        <span class="code-char" data-code-index="3">?</span>
+                        <span class="code-char" data-code-index="4">?</span>
+                        <span class="code-char" data-code-index="5">?</span>
+                        <span class="code-char" data-code-index="6">?</span>
+                    </div>
+                </div>
+
+                <div class="fragment-group">
+                    <h3>COORDINATES:</h3>
+                    <div class="coord-slots">
+                        <span class="coord-part" data-coord-index="0">?</span>
+                        <span class="coord-part" data-coord-index="1">?</span>
+                        <span class="coord-part" data-coord-index="2">?</span>
+                        <span class="coord-part" data-coord-index="3">?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="unlocked-files" class="unlocked-files">
+                <h3>UNLOCKED DOCUMENTS:</h3>
+                <ul id="files-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Schemes Game -->
+    <div id="schemes-game" class="screen game-screen">
+        <div class="game-header">
+            <button class="btn-back">← BACK TO MIND</button>
+            <h2>THE SCHEMES</h2>
+            <p class="game-subtitle">"Thoughts Rising, Ready to Pop"</p>
+        </div>
+
+        <div class="game-content">
+            <div class="balloon-grid" id="balloon-grid">
+                <!-- Balloons generated by JS -->
+            </div>
+
+            <div class="game-stats">
+                <div class="stat">Pops: <span id="pop-count">0</span></div>
+                <div class="stat high-score pulse-glow">High Score: <span id="high-score">666</span></div>
+            </div>
+
+            <div class="game-hint">
+                <p id="schemes-hint">"Each balloon is a plan forming in his mind. Pop them to see his schemes take shape..."</p>
+            </div>
+
+            <div class="puzzle-hints">
+                <div class="hint-box visible" id="hint-schemes-1">
+                    <strong>💭 Hint:</strong> Pop 10 balloons to see a plan crystallize. Simple schemes need simple tries!
+                </div>
+                <div class="hint-box" id="hint-schemes-2">
+                    <!-- Appears after Fragment #1 collected -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Threads Game -->
+    <div id="threads-game" class="screen game-screen">
+        <div class="game-header">
+            <button class="btn-back">← BACK TO MIND</button>
+            <h2>THE THREADS</h2>
+            <p class="game-subtitle">"Fate Spins on a Wheel of Chances"</p>
+        </div>
+
+        <div class="game-content">
+            <div class="wheel-container">
+                <canvas id="wheel-canvas" width="500" height="500"></canvas>
+                <button id="spin-btn" class="btn-spin">SPIN WHEEL</button>
+                <div id="wheel-thread" class="red-thread hidden">🧵</div>
+            </div>
+
+            <div class="command-prompt hidden" id="command-prompt">
+                <div class="prompt-line">
+                    <span class="prompt-symbol">&gt;</span>
+                    <input type="text" id="cmd-input" class="cmd-input" placeholder="type command..." />
+                </div>
+            </div>
+
+            <div class="game-stats">
+                <div class="stat">Spins: <span id="spin-count">0</span></div>
+            </div>
+
+            <div class="game-hint">
+                <p id="threads-hint">"Each spin is a choice Bingo couldn't make. The wheel of fate keeps spinning..."</p>
+            </div>
+
+            <div class="puzzle-hints">
+                <div class="hint-box visible" id="hint-threads-1">
+                    <strong>🎡 Hint:</strong> The fortune itself shows the way...
+                </div>
+                <div class="hint-box" id="hint-threads-2">
+                    <!-- Appears after certain fortunes -->
+                </div>
+                <div class="hint-box" id="hint-threads-3">
+                    <!-- Appears after thread discovered -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Masks Game -->
+    <div id="masks-game" class="screen game-screen">
+        <div class="game-header">
+            <button class="btn-back">← BACK TO MIND</button>
+            <h2>THE MASKS</h2>
+            <p class="game-subtitle">"Three Faces Hide One Truth"</p>
+        </div>
+
+        <div class="game-content">
+            <div class="shell-game-container">
+                <div class="devil-container">
+                    <div id="devil" class="devil">😈</div>
+                    <div id="knife" class="knife hidden">🔪</div>
+                </div>
+
+                <p class="devil-text">The Devil shuffles the truth...</p>
+
+                <div class="shells" id="shells-container">
+                    <div class="shell" data-shell="0">
+                        <div class="shell-top">SHELL 1</div>
+                        <div class="shell-body"></div>
+                    </div>
+                    <div class="shell" data-shell="1">
+                        <div class="shell-top">SHELL 2</div>
+                        <div class="shell-body"></div>
+                    </div>
+                    <div class="shell" data-shell="2">
+                        <div class="shell-top">SHELL 3</div>
+                        <div class="shell-body"></div>
+                    </div>
+                </div>
+
+                <button id="start-shell-btn" class="btn-primary">START GAME</button>
+
+                <div class="angel-corner">
+                    <div id="angel" class="angel">👼</div>
+                </div>
+            </div>
+
+            <div class="game-stats">
+                <div class="stat">Wins: <span id="win-count">0/3</span></div>
+                <div class="stat">Losses: <span id="loss-count">0</span></div>
+            </div>
+
+            <div class="game-hint">
+                <p id="masks-hint">"Behind one shell, the truth. Behind two, lies. The devil thinks you can't tell the difference..."</p>
+            </div>
+
+            <div class="puzzle-hints">
+                <div class="hint-box visible" id="hint-masks-1">
+                    <strong>🥥 Hint:</strong> Follow the shell with the truth beneath, Win three times to pierce the sheath.
+                </div>
+                <div class="hint-box" id="hint-masks-2">
+                    <!-- Appears when angel is clicked -->
+                </div>
+                <div class="hint-box" id="hint-masks-3">
+                    <!-- Appears when devil is laughing -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div id="completion-screen" class="modal">
+        <div class="modal-content completion-content">
+            <div class="glitch-container">
+                <h2 class="glitch completion-title" data-text="CONSCIOUSNESS FULLY RECOVERED">
+                    CONSCIOUSNESS FULLY RECOVERED
+                </h2>
+            </div>
+
+            <div class="assembled-fragments">
+                <h3>FRAGMENTS ASSEMBLED:</h3>
+                <div class="final-code">
+                    <p class="code-line"><strong>Safe Code:</strong> <span id="final-safe-code"></span></p>
+                    <p class="code-line"><strong>Coordinates:</strong> <span id="final-coordinates"></span></p>
+                </div>
+            </div>
+
+            <div class="bingo-message">
+                <p class="final-message">
+                    "You've pieced together what I hid away,<br>
+                    The codes, the plans, the getaway.<br>
+                    My mind is clear, the path is shown,<br>
+                    Now use these secrets I've made known."<br><br>
+                    - Bingo
+                </p>
+            </div>
+
+            <button id="download-memories-btn" class="btn-primary btn-large pulse-glow">
+                DOWNLOAD RECOVERED MEMORIES
+            </button>
+        </div>
+    </div>
+
+    <!-- Memory Flash Overlay -->
+    <div id="memory-flash" class="memory-flash hidden">
+        <div class="flash-content">
+            <div class="flash-static"></div>
+            <div class="flash-text"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="games/schemes.js"></script>
+    <script src="games/threads.js"></script>
+    <script src="games/masks.js"></script>
+    <script src="documents.js"></script>
+    <script src="console-commands.js"></script>
+</body>
+</html>
