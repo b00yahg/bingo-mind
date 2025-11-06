@@ -563,5 +563,22 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Add redraw function to ThreadsGame
+ThreadsGame.redrawWheel = function() {
+    if (!canvas || !ctx) {
+        console.log('Re-initializing canvas...');
+        canvas = document.getElementById('wheel-canvas');
+        if (canvas) {
+            ctx = canvas.getContext('2d');
+        }
+    }
+    if (canvas && ctx) {
+        console.log('Redrawing wheel at rotation:', ThreadsGame.currentRotation);
+        drawWheel(ThreadsGame.currentRotation);
+    } else {
+        console.error('Canvas not available for redraw');
+    }
+};
+
 // Export for debugging
 window.ThreadsGame = ThreadsGame;

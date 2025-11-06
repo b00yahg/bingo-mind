@@ -254,7 +254,7 @@ function gameOver() {
 
 // Check 666 puzzle (each color clicked 6 times)
 function check666Puzzle() {
-    if (SchemesGame.puzzles.puzzle2Complete || !window.GameApp.hasFragment(1)) return;
+    if (SchemesGame.puzzles.puzzle2Complete) return;
 
     // Check if ALL three colors have been clicked exactly 6 times each
     const red = SchemesGame.colorClicks.red;
@@ -276,6 +276,7 @@ function check666Puzzle() {
 
         // Reset counter
         SchemesGame.colorClicks = { red: 0, blue: 0, yellow: 0 };
+        saveSchemesProgress();
     }
 }
 

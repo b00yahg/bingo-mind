@@ -35,6 +35,10 @@ const gameState = {
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
+    // Clear all saved progress on page load (fresh start every time)
+    localStorage.clear();
+    console.log('🎪 Fresh circus experience! All progress cleared.');
+
     loadGameState();
     setupEventListeners();
     updateFragmentDisplay();
@@ -121,6 +125,17 @@ function navigateToScreen(screenId) {
     });
     document.getElementById(screenId).classList.add('active');
     gameState.currentScreen = screenId;
+
+    // Re-initialize wheel when entering threads game
+    if (screenId === 'threads-game' && window.ThreadsGame) {
+        console.log('Re-initializing threads game wheel...');
+        // Give DOM a moment to update, then redraw wheel
+        setTimeout(() => {
+            if (window.ThreadsGame.redrawWheel) {
+                window.ThreadsGame.redrawWheel();
+            }
+        }, 100);
+    }
 }
 
 // Reveal Fragment with memory flash effect

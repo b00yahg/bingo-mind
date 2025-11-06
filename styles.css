@@ -6,35 +6,35 @@
 }
 
 :root {
-    /* Amazing Digital Circus Color Palette */
-    --primary-bg: #0a0033;
-    --secondary-bg: #1a0a4d;
-    --circus-purple: #6b2cf5;
-    --circus-pink: #ff00ff;
-    --circus-cyan: #00ffff;
-    --circus-yellow: #ffff00;
-    --circus-red: #ff3366;
-    --circus-green: #00ff88;
-    --circus-orange: #ff8800;
+    /* Vibrant Circus Color Palette */
+    --primary-bg: #1a0000;
+    --secondary-bg: #330000;
+    --circus-red: #FF0000;
+    --circus-blue: #0066FF;
+    --circus-yellow: #FFD700;
+    --circus-cyan: #00FFFF;
+    --circus-green: #00FF00;
+    --circus-orange: #FF8C00;
+    --circus-pink: #FF1493;
 
-    --accent-neon: var(--circus-pink);
+    --accent-neon: var(--circus-red);
     --accent-cyan: var(--circus-cyan);
     --accent-yellow: var(--circus-yellow);
     --accent-red: var(--circus-red);
     --text-primary: #ffffff;
-    --text-glow: var(--circus-cyan);
-    --border-color: var(--circus-pink);
+    --text-glow: var(--circus-yellow);
+    --border-color: var(--circus-red);
 
     /* Circus-specific */
-    --stripe-color-1: var(--circus-pink);
-    --stripe-color-2: var(--circus-cyan);
+    --stripe-color-1: var(--circus-red);
+    --stripe-color-2: var(--circus-yellow);
 }
 
 body {
     font-family: 'Fredoka', 'Bubblegum Sans', 'Comic Sans MS', cursive, sans-serif;
     font-weight: 600;
     background:
-        linear-gradient(135deg, rgba(10, 0, 51, 0.85) 0%, rgba(26, 10, 77, 0.85) 100%),
+        linear-gradient(135deg, rgba(26, 0, 0, 0.75) 0%, rgba(51, 0, 0, 0.85) 100%),
         url('assets/images/backgrounds/circus_tent_bg.jpg') center/cover no-repeat fixed;
     color: var(--text-primary);
     min-height: 100vh;
@@ -55,12 +55,12 @@ body::after {
             from 0deg at 50% 50%,
             transparent 0deg,
             transparent 10deg,
-            rgba(255, 0, 255, 0.05) 10deg,
-            rgba(255, 0, 255, 0.05) 20deg,
+            rgba(255, 0, 0, 0.08) 10deg,
+            rgba(255, 0, 0, 0.08) 20deg,
             transparent 20deg,
             transparent 30deg,
-            rgba(0, 255, 255, 0.05) 30deg,
-            rgba(0, 255, 255, 0.05) 40deg
+            rgba(255, 215, 0, 0.08) 30deg,
+            rgba(255, 215, 0, 0.08) 40deg
         );
     pointer-events: none;
     z-index: 0;
@@ -844,6 +844,12 @@ body::before {
     transition: all 0.3s ease;
 }
 
+.devil img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
 .devil.laughing {
     animation: devil-laugh 0.5s ease-in-out infinite;
 }
@@ -866,6 +872,12 @@ body::before {
     font-size: 2em;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+.knife img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
 }
 
 .knife.hidden {
@@ -991,6 +1003,12 @@ body::before {
     opacity: 0.6;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+.angel img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
 .angel:hover {
