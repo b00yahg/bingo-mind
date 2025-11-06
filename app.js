@@ -313,10 +313,28 @@ function checkCompletion() {
 
 // Show completion screen
 function showCompletionScreen() {
+    // Cut the background music
+    const bgMusic = document.getElementById('background-music');
+    if (bgMusic) {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+    }
+
+    // Play creepy completion sound
+    const creepySound = new Audio('assets/sounds/completion_creepy.mp3');
+    creepySound.volume = 0.4;
+    creepySound.play().catch(e => console.log('Creepy sound failed:', e));
+
     const modal = document.getElementById('completion-screen');
     document.getElementById('final-safe-code').textContent = 'J3ST-3R';
     document.getElementById('final-coordinates').textContent = '-47.3921, 178.9012 DmPln-2387';
     modal.classList.add('active');
+
+    // Add screen glitch effect
+    document.body.style.animation = 'glitch-shake 0.3s ease-in-out 3';
+    setTimeout(() => {
+        document.body.style.animation = '';
+    }, 1000);
 }
 
 // Download individual file

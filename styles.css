@@ -1154,11 +1154,33 @@ img.angel {
 /* Completion Screen */
 .completion-content {
     text-align: center;
+    background: #000 !important;
+}
+
+.mechanical-text {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-shadow:
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px currentColor;
+    animation: mechanical-flicker 3s infinite;
+}
+
+@keyframes mechanical-flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+    51% { opacity: 1; }
+    52% { opacity: 0.98; }
+    53% { opacity: 1; }
 }
 
 .completion-title {
     font-size: 2em;
     margin-bottom: 30px;
+    color: #00ff00;
 }
 
 .assembled-fragments {
