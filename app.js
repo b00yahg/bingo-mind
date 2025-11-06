@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     updateFragmentDisplay();
     checkCompletion();
+    initBackgroundMusic();
 });
 
 // Load saved game state from LocalStorage
@@ -360,6 +361,32 @@ Now use these secrets I've made known."
 // Utility: Check if fragment is collected
 function hasFragment(num) {
     return gameState.fragments.includes(num);
+}
+
+// Initialize background music (plays on first user interaction)
+function initBackgroundMusic() {
+    const music = document.getElementById('background-music');
+    if (!music) return;
+
+    let musicStarted = false;
+    music.volume = 0.3; // Set volume to 30%
+
+    // Try to play music on any user interaction
+    const startMusic = () => {
+        if (!musicStarted) {
+            music.play().then(() => {
+                musicStarted = true;
+                console.log('Background music started');
+            }).catch(e => {
+                console.log('Background music autoplay blocked, will try on next interaction');
+            });
+        }
+    };
+
+    // Listen for various user interactions
+    document.addEventListener('click', startMusic, { once: true });
+    document.addEventListener('keydown', startMusic, { once: true });
+    document.addEventListener('touchstart', startMusic, { once: true });
 }
 
 // Export functions for use by game modules

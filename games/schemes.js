@@ -9,9 +9,12 @@ const SchemesGame = {
     isPlayerTurn: false,
     inGameMode: false, // NEW: Track if in active game
     score: 0,
-    freeClickCount: 0, // NEW: Track clicks outside game for 666 puzzle
-    lastFreeClickTime: 0, // NEW: Track timing for 666 puzzle
-    devilSequence: [], // For 666 puzzle tracking
+    // NEW: Track clicks per color for 666 puzzle
+    colorClicks: {
+        red: 0,
+        blue: 0,
+        yellow: 0
+    },
     puzzles: {
         puzzle1Complete: false,
         puzzle2Complete: false
@@ -194,12 +197,9 @@ function handleFreeClick(color, balloon) {
         balloon.classList.remove('flash');
     }, 300);
 
-    // Track for 666 puzzle
-    SchemesGame.freeClickCount++;
-    SchemesGame.devilSequence.push({
-        time: Date.now(),
-        color: color
-    });
+    // Track clicks per color for 666 puzzle
+    SchemesGame.colorClicks[color]++;
+    console.log(`[666 Puzzle] ${color}: ${SchemesGame.colorClicks[color]}/6 clicks`);
 
     check666Puzzle();
 }
@@ -252,40 +252,30 @@ function gameOver() {
     }, 2000);
 }
 
-// Check 666 puzzle (outside of game)
+// Check 666 puzzle (each color clicked 6 times)
 function check666Puzzle() {
     if (SchemesGame.puzzles.puzzle2Complete || !window.GameApp.hasFragment(1)) return;
 
-    // Clean old entries (older than 20 seconds)
-    const now = Date.now();
-    SchemesGame.devilSequence = SchemesGame.devilSequence.filter(
-        entry => now - entry.time < 20000
-    );
+    // Check if ALL three colors have been clicked exactly 6 times each
+    const red = SchemesGame.colorClicks.red;
+    const blue = SchemesGame.colorClicks.blue;
+    const yellow = SchemesGame.colorClicks.yellow;
 
-    // Check for 6-6-6 pattern: 6 clicks, pause ~6 seconds, 6 clicks, pause ~6 seconds, 6 clicks
-    if (SchemesGame.devilSequence.length >= 18) {
-        const recent = SchemesGame.devilSequence.slice(-18);
+    console.log(`[666 Puzzle] Progress: Red=${red}/6, Blue=${blue}/6, Yellow=${yellow}/6`);
 
-        // Check timing: groups of 6 with ~6 second gaps
-        let group1 = recent.slice(0, 6);
-        let group2 = recent.slice(6, 12);
-        let group3 = recent.slice(12, 18);
+    if (red >= 6 && blue >= 6 && yellow >= 6) {
+        SchemesGame.puzzles.puzzle2Complete = true;
+        window.GameApp.revealFragment(2); // Reveals "J"
+        window.GameApp.showNotification('🔥 THE DEVIL\'S SIGNATURE DECODED! 🔥');
 
-        const gap1 = group2[0].time - group1[5].time;
-        const gap2 = group3[0].time - group2[5].time;
+        // Visual effect
+        document.body.style.filter = 'hue-rotate(180deg)';
+        setTimeout(() => {
+            document.body.style.filter = '';
+        }, 1000);
 
-        // Both gaps should be between 5-7 seconds
-        if (gap1 >= 5000 && gap1 <= 7000 && gap2 >= 5000 && gap2 <= 7000) {
-            SchemesGame.puzzles.puzzle2Complete = true;
-            window.GameApp.revealFragment(2); // Reveals "J"
-            window.GameApp.showNotification('🔥 THE DEVIL\'S SIGNATURE DECODED! 🔥');
-
-            // Visual effect
-            document.body.style.filter = 'hue-rotate(180deg)';
-            setTimeout(() => {
-                document.body.style.filter = '';
-            }, 1000);
-        }
+        // Reset counter
+        SchemesGame.colorClicks = { red: 0, blue: 0, yellow: 0 };
     }
 }
 

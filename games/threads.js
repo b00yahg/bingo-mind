@@ -39,9 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initThreadsGame() {
     canvas = document.getElementById('wheel-canvas');
-    if (!canvas) return;
+    if (!canvas) {
+        console.error('Canvas element not found!');
+        return;
+    }
+
+    console.log('Canvas found:', canvas.width, 'x', canvas.height);
 
     ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('Could not get 2d context!');
+        return;
+    }
+
+    console.log('Canvas context initialized successfully');
 
     // Load saved progress
     const saved = localStorage.getItem('threadsProgress');
@@ -57,7 +68,9 @@ function initThreadsGame() {
     }
 
     // Draw initial wheel
+    console.log('Drawing initial wheel...');
     drawWheel();
+    console.log('Wheel drawn!');
 
     // Spin button
     const spinBtn = document.getElementById('spin-btn');

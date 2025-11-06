@@ -84,7 +84,7 @@
         <div class="portrait-container">
             <div id="bingo-portrait" class="portrait">
                 <div class="portrait-frame">
-                    <div class="portrait-image">🤡</div>
+                    <img src="assets/images/characters/bingo_portrait.png" alt="Bingo" class="portrait-image" onerror="this.outerHTML='<div class=\'portrait-image\'>🤡</div>'">
                     <p class="portrait-caption">"The Fool's mind is a labyrinth of secrets..."</p>
                 </div>
             </div>
@@ -203,8 +203,12 @@
         <div class="game-content">
             <div class="shell-game-container">
                 <div class="devil-container">
-                    <div id="devil" class="devil">😈</div>
-                    <div id="knife" class="knife hidden">🔪</div>
+                    <div id="devil" class="devil">
+                        <img src="assets/images/characters/devil_normal.png" alt="Devil" onerror="this.outerHTML='😈'">
+                    </div>
+                    <div id="knife" class="knife hidden">
+                        <img src="assets/images/weapons/knife.png" alt="Knife" onerror="this.outerHTML='🔪'">
+                    </div>
                 </div>
 
                 <p class="devil-text">The Devil shuffles the truth...</p>
@@ -227,7 +231,7 @@
                 <button id="start-shell-btn" class="btn-primary">START GAME</button>
 
                 <div class="angel-corner">
-                    <div id="angel" class="angel">👼</div>
+                    <img src="assets/images/characters/angel.png" alt="Angel" id="angel" class="angel" onerror="this.outerHTML='<div id=\'angel\' class=\'angel\'>👼</div>'">
                 </div>
             </div>
 
@@ -282,6 +286,11 @@
             <div class="flash-text"></div>
         </div>
     </div>
+
+    <!-- Background Music -->
+    <audio id="background-music" loop>
+        <source src="assets/music/circus_theme.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Scripts -->
     <script src="app.js"></script>
