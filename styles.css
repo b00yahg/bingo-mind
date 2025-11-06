@@ -1001,6 +1001,16 @@ body::before {
     display: block;
 }
 
+/* Force angel img size when img has the angel class directly */
+img.angel {
+    width: 8px !important;
+    height: 8px !important;
+    max-width: 8px !important;
+    max-height: 8px !important;
+    object-fit: contain;
+    display: block;
+}
+
 .angel img {
     width: 8px !important;
     height: 8px !important;

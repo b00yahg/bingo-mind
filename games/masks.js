@@ -105,6 +105,8 @@ function showBallBriefly() {
     // Wait 2 seconds then shuffle
     setTimeout(() => {
         correctShell.classList.remove('lifted');
+        // Hide ball before shuffling
+        correctShell.classList.remove('has-ball');
         shuffleShells();
     }, 2000);
 }
@@ -121,6 +123,11 @@ async function shuffleShells() {
     window.GameApp.showNotification('The devil shuffles...');
 
     const shells = document.querySelectorAll('.shell');
+
+    // Make absolutely sure all balls are hidden during shuffle
+    shells.forEach(shell => {
+        shell.classList.remove('has-ball');
+    });
 
     // Perform shuffle animation
     for (let i = 0; i < 5; i++) {
