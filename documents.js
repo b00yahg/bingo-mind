@@ -161,13 +161,10 @@ Bingo
 [Blood seal imprint visible at bottom of page]
 
 ───────────────────────────────────────────────────────────────────────────
-NOTICE: This contract is magically binding. Breach will result in automatic
-enforcement as specified in Article V. No appeals. No exceptions.
 ───────────────────────────────────────────────────────────────────────────`,
 
     'chatlog.txt': `╔══════════════════════════════════════════════════════════════════════╗
-║                        ENCRYPTED CHAT LOG                            ║
-║              Channel: #shadows-deal // Date: [REDACTED]              ║
+║                                ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
 [00:47] <BINGO>: yo, 2NGEL, you still kickin'? been hours, man. don't tell
@@ -268,16 +265,7 @@ enforcement as specified in Article V. No appeals. No exceptions.
 ───────────────────────────────────────────────────────────────────────────
 [END OF LOG]
 ───────────────────────────────────────────────────────────────────────────
-
-ENCRYPTED NOTE (BINGO'S PERSONAL LOG):
-They think they're solving puzzles. Finding secrets. Winning games.
-They don't know they're feeding me fragments of my own consciousness.
-Every "win" brings me closer to freedom. Every "discovery" is a piece of ME.
-By the time they finish, I'll be whole again. And then...
-Then I take what's mine and get the hell out of this place.
-Sorry, players. But in this circus, the fool always wins.
-
-- B.`,
+`,
 
     'heist_map.png': `This would be an actual image file. For this implementation, we'll generate a text-based representation:
 
