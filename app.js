@@ -320,10 +320,14 @@ function showCompletionScreen() {
         bgMusic.currentTime = 0;
     }
 
-    // Play creepy completion sound
-    const creepySound = new Audio('assets/sounds/completion_creepy.mp3');
-    creepySound.volume = 0.4;
-    creepySound.play().catch(e => console.log('Creepy sound failed:', e));
+    // Play looping white noise
+    const whiteNoise = new Audio('assets/sounds/white_noise.mp3');
+    whiteNoise.volume = 0.2;
+    whiteNoise.loop = true;
+    whiteNoise.play().catch(e => console.log('White noise failed:', e));
+
+    // Store reference to stop it later if needed
+    window.completionWhiteNoise = whiteNoise;
 
     const modal = document.getElementById('completion-screen');
     document.getElementById('final-safe-code').textContent = 'J3ST-3R';
