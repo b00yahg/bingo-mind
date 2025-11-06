@@ -259,13 +259,14 @@ function getLandedFortune() {
     let normalizedRotation = ThreadsGame.currentRotation % (Math.PI * 2);
     if (normalizedRotation < 0) normalizedRotation += Math.PI * 2;
 
-    // Add PI/2 to account for starting at top
-    normalizedRotation = (normalizedRotation + Math.PI / 2) % (Math.PI * 2);
+    // The wheel spins clockwise, so we need to invert and account for top start
+    normalizedRotation = (Math.PI * 2 - normalizedRotation) % (Math.PI * 2);
 
     // Calculate which segment
-    const segmentIndex = Math.floor(normalizedRotation / anglePerSegment);
+    const rawIndex = Math.floor(normalizedRotation / anglePerSegment);
+    const segmentIndex = rawIndex % numSegments;
 
-    console.log('🎯 Landed on segment index:', segmentIndex, '=', ThreadsGame.fortunes[segmentIndex].text);
+    console.log('🎯 Rotation:', normalizedRotation.toFixed(2), 'Raw index:', rawIndex, 'Final index:', segmentIndex, '=', ThreadsGame.fortunes[segmentIndex].text);
 
     return ThreadsGame.fortunes[segmentIndex];
 }
@@ -385,6 +386,12 @@ function triggerCreepyEffect() {
     const creepyAudio = new Audio('assets/sounds/creepy_reverse.mp3');
     creepyAudio.volume = 0.3;
     creepyAudio.play().catch(e => console.log('Creepy audio failed:', e));
+
+    // Stop creepy audio after 3 seconds
+    setTimeout(() => {
+        creepyAudio.pause();
+        creepyAudio.currentTime = 0;
+    }, 3000);
 
     // Show warning message after flash
     setTimeout(() => {
