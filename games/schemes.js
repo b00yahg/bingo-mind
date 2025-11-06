@@ -1,14 +1,24 @@
-// THE SCHEMES - Balloon Pop Game
+// THE SCHEMES - Simon Says Balloon Game
 
 const SchemesGame = {
-    popCount: 0,
     colors: ['red', 'blue', 'yellow'],
-    devilSequence: [],
-    devilTimer: null,
+    pattern: [],
+    playerInput: [],
+    round: 0,
+    isShowingPattern: false,
+    isPlayerTurn: false,
+    score: 0,
+    devilSequence: [], // For 666 puzzle tracking
     puzzles: {
         puzzle1Complete: false,
         puzzle2Complete: false
     }
+};
+
+const SOUNDS = {
+    balloonPop: new Audio('assets/sounds/balloon_pop.mp3'),
+    correctChime: new Audio('assets/sounds/correct_chime.mp3'),
+    wrongBuzzer: new Audio('assets/sounds/wrong_buzzer.mp3')
 };
 
 // Initialize Schemes Game
@@ -21,13 +31,21 @@ function initSchemesGame() {
     const saved = localStorage.getItem('schemesProgress');
     if (saved) {
         const progress = JSON.parse(saved);
-        SchemesGame.popCount = progress.popCount || 0;
+        SchemesGame.score = progress.score || 0;
+        SchemesGame.round = progress.round || 0;
         SchemesGame.puzzles = progress.puzzles || SchemesGame.puzzles;
-        document.getElementById('pop-count').textContent = SchemesGame.popCount;
     }
 
-    // Generate initial balloons
+    // Generate balloon buttons
     generateBalloons();
+
+    // Start button
+    const startBtn = document.getElementById('start-balloon-btn');
+    if (startBtn) {
+        startBtn.addEventListener('click', startNewGame);
+    }
+
+    updateDisplay();
 
     // Check if Fragment #1 was collected to show hint #2
     if (window.GameApp && window.GameApp.hasFragment(1) && !window.GameApp.hasFragment(2)) {
@@ -35,67 +53,155 @@ function initSchemesGame() {
     }
 }
 
-// Generate balloon grid
+// Generate balloon buttons
 function generateBalloons() {
     const grid = document.getElementById('balloon-grid');
     grid.innerHTML = '';
 
-    for (let i = 0; i < 9; i++) {
-        const color = SchemesGame.colors[Math.floor(Math.random() * 3)];
-        const balloon = createBalloon(color, i);
-        grid.appendChild(balloon);
+    SchemesGame.colors.forEach((color, index) => {
+        const balloonBtn = createBalloonButton(color, index);
+        grid.appendChild(balloonBtn);
+    });
+}
+
+// Create balloon button
+function createBalloonButton(color, index) {
+    const container = document.createElement('div');
+    container.className = 'balloon-container';
+
+    const balloon = document.createElement('div');
+    balloon.className = `balloon ${color}`;
+    balloon.setAttribute('data-color', color);
+
+    // Use image if available, fallback to emoji
+    const img = document.createElement('img');
+    img.src = `assets/images/balloons/${color}_balloon.png`;
+    img.alt = `${color} balloon`;
+    img.onerror = () => {
+        // Fallback to emoji if image not found
+        balloon.innerHTML = '<span class="balloon-emoji">🎈</span>';
+    };
+    balloon.appendChild(img);
+
+    balloon.style.animationDelay = `${index * 0.15}s`;
+
+    balloon.addEventListener('click', () => {
+        if (SchemesGame.isPlayerTurn && !SchemesGame.isShowingPattern) {
+            handlePlayerClick(color, balloon);
+        }
+    });
+
+    container.appendChild(balloon);
+    return container;
+}
+
+// Start new game
+function startNewGame() {
+    SchemesGame.pattern = [];
+    SchemesGame.playerInput = [];
+    SchemesGame.round = 0;
+    nextRound();
+}
+
+// Next round
+function nextRound() {
+    SchemesGame.round++;
+    SchemesGame.playerInput = [];
+
+    // Add new color to pattern
+    const randomColor = SchemesGame.colors[Math.floor(Math.random() * SchemesGame.colors.length)];
+    SchemesGame.pattern.push(randomColor);
+
+    updateDisplay();
+
+    // Show pattern to player
+    setTimeout(() => {
+        showPattern();
+    }, 1000);
+}
+
+// Show pattern to player
+async function showPattern() {
+    SchemesGame.isShowingPattern = true;
+    SchemesGame.isPlayerTurn = false;
+
+    document.getElementById('game-status').textContent = "Watch the pattern!";
+    disableAllBalloons();
+
+    for (let i = 0; i < SchemesGame.pattern.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 600));
+        flashBalloon(SchemesGame.pattern[i]);
+        await new Promise(resolve => setTimeout(resolve, 600));
+    }
+
+    SchemesGame.isShowingPattern = false;
+    SchemesGame.isPlayerTurn = true;
+    document.getElementById('game-status').textContent = "Your turn! Repeat the pattern!";
+    enableAllBalloons();
+}
+
+// Flash balloon
+function flashBalloon(color) {
+    const balloon = document.querySelector(`.balloon[data-color="${color}"]`);
+    if (balloon) {
+        balloon.classList.add('flash');
+        playSound(SOUNDS.balloonPop);
+
+        setTimeout(() => {
+            balloon.classList.remove('flash');
+        }, 500);
     }
 }
 
-// Create individual balloon
-function createBalloon(color, index) {
-    const balloon = document.createElement('div');
-    balloon.className = `balloon ${color}`;
-    balloon.textContent = '🎈';
-    balloon.style.animationDelay = `${index * 0.1}s`;
+// Handle player click
+function handlePlayerClick(color, balloon) {
+    SchemesGame.playerInput.push(color);
 
-    balloon.addEventListener('click', () => {
-        popBalloon(balloon, color);
-    });
-
-    return balloon;
-}
-
-// Pop balloon action
-function popBalloon(balloon, color) {
-    if (balloon.classList.contains('popping')) return;
-
-    // Animation
-    balloon.classList.add('popping');
-
-    // Update count
-    SchemesGame.popCount++;
-    document.getElementById('pop-count').textContent = SchemesGame.popCount;
-
-    // Track for devil sequence (puzzle 2)
-    SchemesGame.devilSequence.push({
-        time: Date.now(),
-        count: SchemesGame.popCount
-    });
-
-    // Respawn balloon after pop
+    // Visual feedback
+    balloon.classList.add('flash');
+    playSound(SOUNDS.balloonPop);
     setTimeout(() => {
-        const newColor = SchemesGame.colors[Math.floor(Math.random() * 3)];
-        balloon.className = `balloon ${newColor}`;
-        balloon.style.animationDelay = '0s';
+        balloon.classList.remove('flash');
     }, 300);
 
-    // Check puzzles
-    checkSchemesPuzzles();
+    // Track for 666 puzzle
+    SchemesGame.devilSequence.push({
+        time: Date.now(),
+        color: color
+    });
 
-    // Save progress
-    saveSchemesProgress();
+    // Check if pattern matches so far
+    const currentIndex = SchemesGame.playerInput.length - 1;
+
+    if (SchemesGame.playerInput[currentIndex] !== SchemesGame.pattern[currentIndex]) {
+        // Wrong!
+        gameOver();
+        return;
+    }
+
+    // Check if pattern complete
+    if (SchemesGame.playerInput.length === SchemesGame.pattern.length) {
+        // Correct!
+        patternComplete();
+    }
+
+    // Check 666 puzzle
+    check666Puzzle();
 }
 
-// Check puzzle conditions
-function checkSchemesPuzzles() {
-    // PUZZLE 1: Pop 10 balloons (SURFACE)
-    if (!SchemesGame.puzzles.puzzle1Complete && SchemesGame.popCount >= 10) {
+// Pattern complete
+function patternComplete() {
+    SchemesGame.isPlayerTurn = false;
+    SchemesGame.score++;
+
+    playSound(SOUNDS.correctChime);
+    document.getElementById('game-status').textContent = "Correct! Get ready...";
+
+    updateDisplay();
+    saveSchemesProgress();
+
+    // PUZZLE 1: Complete 5 rounds successfully (SURFACE)
+    if (!SchemesGame.puzzles.puzzle1Complete && SchemesGame.score >= 5) {
         SchemesGame.puzzles.puzzle1Complete = true;
         setTimeout(() => {
             window.GameApp.revealFragment(1); // Reveals "-47"
@@ -103,59 +209,121 @@ function checkSchemesPuzzles() {
         }, 500);
     }
 
-    // PUZZLE 2: The Devil's Signature - 6-6-6 pattern (HIDDEN)
-    if (!SchemesGame.puzzles.puzzle2Complete && window.GameApp.hasFragment(1)) {
-        checkDevilSequence();
-    }
+    // Next round
+    setTimeout(() => {
+        nextRound();
+    }, 1500);
 }
 
-// Check for 6-6-6 pattern
-function checkDevilSequence() {
-    // Clean old entries (older than 30 seconds)
+// Game over
+function gameOver() {
+    SchemesGame.isPlayerTurn = false;
+    playSound(SOUNDS.wrongBuzzer);
+
+    document.getElementById('game-status').textContent = `Wrong! You reached round ${SchemesGame.round}. Try again!`;
+    disableAllBalloons();
+
+    // Reset button
+    setTimeout(() => {
+        document.getElementById('game-status').textContent = "Click 'Start Game' to try again!";
+    }, 2000);
+}
+
+// Check 666 puzzle
+function check666Puzzle() {
+    if (SchemesGame.puzzles.puzzle2Complete || !window.GameApp.hasFragment(1)) return;
+
+    // Clean old entries (older than 20 seconds)
     const now = Date.now();
     SchemesGame.devilSequence = SchemesGame.devilSequence.filter(
-        entry => now - entry.time < 30000
+        entry => now - entry.time < 20000
     );
 
-    // Look for pattern: pop 6, wait ~6 seconds, pop 6 more
-    if (SchemesGame.devilSequence.length >= 12) {
-        const recent = SchemesGame.devilSequence.slice(-12);
+    // Check for 6-6-6 pattern: 6 clicks, pause ~6 seconds, 6 clicks, pause ~6 seconds, 6 clicks
+    if (SchemesGame.devilSequence.length >= 18) {
+        const recent = SchemesGame.devilSequence.slice(-18);
 
-        // Check if there's a ~6 second gap between 6th and 7th pop
-        const firstSix = recent.slice(0, 6);
-        const secondSix = recent.slice(6, 12);
+        // Check timing: groups of 6 with ~6 second gaps
+        let group1 = recent.slice(0, 6);
+        let group2 = recent.slice(6, 12);
+        let group3 = recent.slice(12, 18);
 
-        const gapTime = secondSix[0].time - firstSix[5].time;
+        const gap1 = group2[0].time - group1[5].time;
+        const gap2 = group3[0].time - group2[5].time;
 
-        // Gap should be between 5-7 seconds (5000-7000ms)
-        if (gapTime >= 5000 && gapTime <= 7000) {
+        // Both gaps should be between 5-7 seconds
+        if (gap1 >= 5000 && gap1 <= 7000 && gap2 >= 5000 && gap2 <= 7000) {
             SchemesGame.puzzles.puzzle2Complete = true;
             window.GameApp.revealFragment(2); // Reveals "J"
-            window.GameApp.showNotification('THE DEVIL\'S SIGNATURE DECODED!');
+            window.GameApp.showNotification('🔥 THE DEVIL\'S SIGNATURE DECODED! 🔥');
+
+            // Visual effect
+            document.body.style.filter = 'hue-rotate(180deg)';
+            setTimeout(() => {
+                document.body.style.filter = '';
+            }, 1000);
         }
     }
 }
 
-// Show devil hint after Fragment #1
+// Show devil hint
 function showDevilHint() {
     const hintBox = document.getElementById('hint-schemes-2');
     hintBox.innerHTML = `
-        <strong>😈 Hidden Hint:</strong> The devil's number marks his work... Six-six-six in the score that lurks.
-        But hundreds are too many, I agree, Try his signature another way you see.
-        When balloons match the beast in count, His first mark appears from your account.
+        <strong>😈 Hidden Puzzle:</strong> The high score shows 666. The number of the beast has power.
+        What if you clicked balloons in a pattern that honored this number?
+        Six clicks. Wait six seconds. Six more clicks. Wait six seconds. Six final clicks.
         <br><br>
-        <em style="color: var(--accent-yellow);">💡 Tip: Pop 6 balloons, wait 6 seconds, then pop 6 more...</em>
+        <em style="color: #ff3366;">The devil rewards those who know his signature.</em>
     `;
     hintBox.classList.add('visible');
 
-    // Make high score pulse more
-    document.getElementById('high-score').parentElement.style.animation = 'pulse-glow 1s ease-in-out infinite';
+    // Make high score pulse
+    const highScore = document.getElementById('high-score').parentElement;
+    if (highScore) {
+        highScore.style.animation = 'pulse-glow 1s ease-in-out infinite';
+    }
 }
 
-// Save progress
+// Utility functions
+function disableAllBalloons() {
+    document.querySelectorAll('.balloon').forEach(b => {
+        b.style.pointerEvents = 'none';
+        b.style.opacity = '0.5';
+    });
+}
+
+function enableAllBalloons() {
+    document.querySelectorAll('.balloon').forEach(b => {
+        b.style.pointerEvents = 'auto';
+        b.style.opacity = '1';
+    });
+}
+
+function updateDisplay() {
+    const statusEl = document.getElementById('game-status');
+    const roundEl = document.getElementById('balloon-round');
+    const scoreEl = document.getElementById('balloon-score');
+
+    if (statusEl && SchemesGame.round === 0) {
+        statusEl.textContent = "Click 'Start Game' to begin!";
+    }
+    if (roundEl) roundEl.textContent = SchemesGame.round;
+    if (scoreEl) scoreEl.textContent = SchemesGame.score;
+}
+
+function playSound(audio) {
+    if (audio) {
+        audio.currentTime = 0;
+        audio.volume = 0.3;
+        audio.play().catch(e => console.log('Audio play failed:', e));
+    }
+}
+
 function saveSchemesProgress() {
     localStorage.setItem('schemesProgress', JSON.stringify({
-        popCount: SchemesGame.popCount,
+        score: SchemesGame.score,
+        round: SchemesGame.round,
         puzzles: SchemesGame.puzzles
     }));
 }

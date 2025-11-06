@@ -563,34 +563,93 @@ body::before {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* SCHEMES GAME - Balloon Pop */
+/* SCHEMES GAME - Simon Says Balloon */
+.game-status-bar {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid var(--accent-cyan);
+}
+
+.status-text {
+    font-size: 1.3em;
+    color: var(--accent-yellow);
+    font-weight: bold;
+}
+
 .balloon-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    max-width: 500px;
+    gap: 30px;
+    max-width: 600px;
     margin: 30px auto;
 }
 
+.balloon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 .balloon {
-    width: 100px;
-    height: 120px;
+    width: 120px;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3em;
     cursor: pointer;
     transition: all 0.2s ease;
     animation: balloon-float 3s ease-in-out infinite;
+    position: relative;
+}
+
+.balloon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.balloon-emoji {
+    font-size: 4em;
 }
 
 .balloon:hover {
     transform: scale(1.1);
 }
 
-.balloon.red { color: #ff3366; filter: drop-shadow(0 0 10px #ff3366); }
-.balloon.blue { color: #3366ff; filter: drop-shadow(0 0 10px #3366ff); }
-.balloon.yellow { color: #ffff33; filter: drop-shadow(0 0 10px #ffff33); }
+.balloon.flash {
+    transform: scale(1.3);
+    filter: brightness(2) drop-shadow(0 0 30px currentColor);
+}
+
+.balloon.red {
+    color: #ff3366;
+    filter: drop-shadow(0 0 10px #ff3366);
+}
+
+.balloon.red.flash {
+    filter: brightness(2) drop-shadow(0 0 40px #ff3366);
+}
+
+.balloon.blue {
+    color: #3366ff;
+    filter: drop-shadow(0 0 10px #3366ff);
+}
+
+.balloon.blue.flash {
+    filter: brightness(2) drop-shadow(0 0 40px #3366ff);
+}
+
+.balloon.yellow {
+    color: #ffff33;
+    filter: drop-shadow(0 0 10px #ffff33);
+}
+
+.balloon.yellow.flash {
+    filter: brightness(2) drop-shadow(0 0 40px #ffff33);
+}
 
 @keyframes balloon-float {
     0%, 100% { transform: translateY(0) rotate(-2deg); }
@@ -800,6 +859,32 @@ body::before {
 .shell.disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.shell.lifted .shell-top {
+    transform: translateY(-30px) rotateX(-20deg);
+    transition: transform 0.5s ease;
+}
+
+.shell.has-ball .shell-body::before {
+    content: '⚫';
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2em;
+    animation: ball-bounce 0.5s ease-in-out infinite;
+}
+
+@keyframes ball-bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+.shell-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .angel-corner {

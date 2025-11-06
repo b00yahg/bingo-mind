@@ -1,4 +1,4 @@
-// THE MASKS - Shell Game
+// THE MASKS - Shell Game (Properly Implemented)
 
 const MasksGame = {
     wins: 0,
@@ -6,6 +6,7 @@ const MasksGame = {
     consecutiveLosses: 0,
     correctShell: null,
     gameActive: false,
+    isShuffling: false,
     devilLaughing: false,
     knifeActive: false,
     puzzles: {
@@ -13,6 +14,14 @@ const MasksGame = {
         puzzle2Complete: false,
         puzzle3Complete: false
     }
+};
+
+const SHELL_SOUNDS = {
+    shuffle: new Audio('assets/sounds/shuffle.mp3'),
+    win: new Audio('assets/sounds/win.mp3'),
+    lose: new Audio('assets/sounds/lose.mp3'),
+    devilLaugh: new Audio('assets/sounds/devil_laugh.mp3'),
+    stab: new Audio('assets/sounds/stab.mp3')
 };
 
 // Initialize Masks Game
@@ -39,54 +48,156 @@ function initMasksGame() {
     }
 
     // Start game button
-    document.getElementById('start-shell-btn').addEventListener('click', startShellGame);
+    const startBtn = document.getElementById('start-shell-btn');
+    if (startBtn) {
+        startBtn.addEventListener('click', startShellGame);
+    }
 
     // Angel click handler
-    document.getElementById('angel').addEventListener('click', showAngelMessage);
+    const angel = document.getElementById('angel');
+    if (angel) {
+        angel.addEventListener('click', showAngelMessage);
+    }
 
     // Knife click handler
-    document.getElementById('knife').addEventListener('click', activateKnife);
+    const knife = document.getElementById('knife');
+    if (knife) {
+        knife.addEventListener('click', activateKnife);
+    }
+
+    // Setup shell images
+    setupShellImages();
+}
+
+// Setup shell images
+function setupShellImages() {
+    document.querySelectorAll('.shell').forEach(shell => {
+        const shellBody = shell.querySelector('.shell-body');
+        if (shellBody && !shellBody.querySelector('img')) {
+            const img = document.createElement('img');
+            img.src = 'assets/images/shells/shell_closed.png';
+            img.alt = 'Shell';
+            img.className = 'shell-img';
+            img.onerror = () => {
+                // Fallback styling if image doesn't load
+                shellBody.style.background = 'linear-gradient(135deg, #D2691E 0%, #CD853F 100%)';
+            };
+            shellBody.appendChild(img);
+        }
+    });
 }
 
 // Update display
 function updateMasksDisplay() {
-    document.getElementById('win-count').textContent = `${MasksGame.wins}/3`;
-    document.getElementById('loss-count').textContent = MasksGame.losses;
+    const winCount = document.getElementById('win-count');
+    const lossCount = document.getElementById('loss-count');
+    if (winCount) winCount.textContent = `${MasksGame.wins}/3`;
+    if (lossCount) lossCount.textContent = MasksGame.losses;
 }
 
 // Start shell game
 function startShellGame() {
-    if (MasksGame.gameActive) return;
+    if (MasksGame.gameActive || MasksGame.isShuffling) return;
 
-    MasksGame.gameActive = true;
-    MasksGame.correctShell = Math.floor(Math.random() * 3);
-
-    // Hide all shell indicators
+    // Reset shells
     document.querySelectorAll('.shell').forEach(shell => {
-        shell.classList.remove('correct', 'wrong', 'disabled');
+        shell.classList.remove('correct', 'wrong', 'disabled', 'has-ball', 'lifted');
+        shell.style.pointerEvents = 'none';
     });
 
-    // Shuffle animation
-    shuffleShells();
+    // Pick random shell for the ball
+    MasksGame.correctShell = Math.floor(Math.random() * 3);
 
-    // Enable shell selection after shuffle
+    // Show the ball briefly under correct shell
+    showBallBriefly();
+}
+
+// Show ball briefly before shuffle
+function showBallBriefly() {
+    const shells = document.querySelectorAll('.shell');
+    const correctShell = shells[MasksGame.correctShell];
+
+    // Lift shell to show ball
+    correctShell.classList.add('lifted');
+    correctShell.classList.add('has-ball');
+
+    window.GameApp.showNotification('Remember which shell has the ball!');
+
+    // Wait 2 seconds then shuffle
     setTimeout(() => {
-        document.querySelectorAll('.shell').forEach((shell, index) => {
-            shell.addEventListener('click', () => selectShell(index), {once: true});
-        });
+        correctShell.classList.remove('lifted');
+        shuffleShells();
     }, 2000);
 }
 
 // Shuffle shells animation
-function shuffleShells() {
-    const devil = document.getElementById('devil');
-    devil.style.animation = 'devil-shuffle 2s ease-in-out';
+async function shuffleShells() {
+    MasksGame.isShuffling = true;
+    MasksGame.gameActive = false;
 
+    const devil = document.getElementById('devil');
+    if (devil) devil.style.animation = 'devil-shuffle 2s ease-in-out';
+
+    playSound(SHELL_SOUNDS.shuffle);
     window.GameApp.showNotification('The devil shuffles...');
 
-    setTimeout(() => {
-        devil.style.animation = '';
-    }, 2000);
+    const shells = document.querySelectorAll('.shell');
+
+    // Perform shuffle animation
+    for (let i = 0; i < 5; i++) {
+        const shell1 = Math.floor(Math.random() * 3);
+        const shell2 = Math.floor(Math.random() * 3);
+
+        if (shell1 !== shell2) {
+            // Animate shell swap
+            await swapShells(shells[shell1], shells[shell2], shell1, shell2);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 400));
+    }
+
+    if (devil) devil.style.animation = '';
+
+    MasksGame.isShuffling = false;
+    MasksGame.gameActive = true;
+
+    // Enable shell selection
+    shells.forEach((shell, index) => {
+        shell.style.pointerEvents = 'auto';
+        shell.addEventListener('click', () => selectShell(index), {once: true});
+    });
+
+    window.GameApp.showNotification('Pick a shell!');
+}
+
+// Swap two shells with animation
+async function swapShells(shell1, shell2, index1, index2) {
+    const rect1 = shell1.getBoundingClientRect();
+    const rect2 = shell2.getBoundingClientRect();
+
+    const deltaX = rect2.left - rect1.left;
+
+    // Animate
+    shell1.style.transition = 'transform 0.4s';
+    shell2.style.transition = 'transform 0.4s';
+
+    shell1.style.transform = `translateX(${deltaX}px)`;
+    shell2.style.transform = `translateX(${-deltaX}px)`;
+
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    // Swap in array (track which shell has ball)
+    if (MasksGame.correctShell === index1) {
+        MasksGame.correctShell = index2;
+    } else if (MasksGame.correctShell === index2) {
+        MasksGame.correctShell = index1;
+    }
+
+    // Reset transform
+    shell1.style.transition = 'none';
+    shell2.style.transition = 'none';
+    shell1.style.transform = '';
+    shell2.style.transform = '';
 }
 
 // Select a shell
@@ -97,60 +208,92 @@ function selectShell(index) {
 
     const shells = document.querySelectorAll('.shell');
     const selectedShell = shells[index];
+    const correctShell = shells[MasksGame.correctShell];
 
-    if (index === MasksGame.correctShell) {
-        // Correct choice - WIN
-        selectedShell.classList.add('correct');
-        MasksGame.wins++;
-        MasksGame.consecutiveLosses = 0;
+    // Disable all shells
+    shells.forEach(s => s.style.pointerEvents = 'none');
 
-        window.GameApp.showNotification('🎉 You found the truth!');
+    // Lift selected shell
+    selectedShell.classList.add('lifted');
 
-        // PUZZLE 1: Win 3 times (SURFACE)
-        if (!MasksGame.puzzles.puzzle1Complete && MasksGame.wins >= 3) {
-            MasksGame.puzzles.puzzle1Complete = true;
-            setTimeout(() => {
-                window.GameApp.revealFragment(6); // Reveals "178.9012"
-            }, 1000);
-        }
-    } else {
-        // Wrong choice - LOSS
-        selectedShell.classList.add('wrong');
-        shells[MasksGame.correctShell].classList.add('correct');
-        MasksGame.losses++;
-        MasksGame.consecutiveLosses++;
-
-        window.GameApp.showNotification('❌ The devil deceived you!');
-
-        // PUZZLE 2: Lose 3 times in a row (HIDDEN)
-        if (!MasksGame.puzzles.puzzle2Complete && MasksGame.consecutiveLosses >= 3) {
-            MasksGame.puzzles.puzzle2Complete = true;
-            setTimeout(() => {
-                startDevilLaugh();
-                window.GameApp.revealFragment(7); // Reveals "T"
-                window.GameApp.showNotification('The devil laughs at your failures!');
-            }, 1000);
-        }
-    }
-
-    updateMasksDisplay();
-    saveMasksProgress();
-
-    // Reset button
     setTimeout(() => {
-        document.getElementById('start-shell-btn').textContent = 'PLAY AGAIN';
-    }, 2000);
+        if (index === MasksGame.correctShell) {
+            // Correct choice - WIN
+            selectedShell.classList.add('correct', 'has-ball');
+            MasksGame.wins++;
+            MasksGame.consecutiveLosses = 0;
+
+            playSound(SHELL_SOUNDS.win);
+            window.GameApp.showNotification('🎉 You found the truth!');
+
+            // PUZZLE 1: Win 3 times (SURFACE)
+            if (!MasksGame.puzzles.puzzle1Complete && MasksGame.wins >= 3) {
+                MasksGame.puzzles.puzzle1Complete = true;
+                setTimeout(() => {
+                    window.GameApp.revealFragment(6); // Reveals "178.9012"
+                }, 1000);
+            }
+        } else {
+            // Wrong choice - LOSS
+            selectedShell.classList.add('wrong');
+            correctShell.classList.add('lifted', 'has-ball');
+
+            MasksGame.losses++;
+            MasksGame.consecutiveLosses++;
+
+            playSound(SHELL_SOUNDS.lose);
+            window.GameApp.showNotification('❌ The devil deceived you!');
+
+            // PUZZLE 2: Lose 3 times in a row (HIDDEN)
+            if (!MasksGame.puzzles.puzzle2Complete && MasksGame.consecutiveLosses >= 3) {
+                MasksGame.puzzles.puzzle2Complete = true;
+                setTimeout(() => {
+                    startDevilLaugh();
+                    window.GameApp.revealFragment(7); // Reveals "T"
+                    window.GameApp.showNotification('The devil laughs at your failures!');
+                }, 1000);
+            }
+        }
+
+        updateMasksDisplay();
+        saveMasksProgress();
+
+        // Reset button text
+        setTimeout(() => {
+            const startBtn = document.getElementById('start-shell-btn');
+            if (startBtn) startBtn.textContent = 'PLAY AGAIN';
+
+            // Reset shells after a moment
+            setTimeout(() => {
+                shells.forEach(s => {
+                    s.classList.remove('lifted', 'correct', 'wrong', 'has-ball');
+                });
+            }, 2000);
+        }, 2000);
+    }, 800);
 }
 
 // Start devil laughing
 function startDevilLaugh() {
     MasksGame.devilLaughing = true;
     const devil = document.getElementById('devil');
-    devil.classList.add('laughing');
+    if (devil) {
+        devil.classList.add('laughing');
+        // Update devil image
+        const devilImg = devil.querySelector('img');
+        if (devilImg) {
+            devilImg.src = 'assets/images/characters/devil_laughing.gif';
+        }
+    }
+
+    playSound(SHELL_SOUNDS.devilLaugh);
 
     // Show knife and hint
-    document.getElementById('knife').classList.remove('hidden');
-    document.getElementById('knife').classList.add('available');
+    const knife = document.getElementById('knife');
+    if (knife) {
+        knife.classList.remove('hidden');
+        knife.classList.add('available');
+    }
 
     showKnifeHint();
     saveMasksProgress();
@@ -162,12 +305,10 @@ function showAngelMessage() {
     hintBox.innerHTML = `
         <strong>👼 Angel's Wisdom:</strong> "For every win, his pride does grow,
         But everyone laughs when fools fall low.
-        Slip on the peel once, twice, then thrice,
-        And watch the devil's guard suffice.
-        Three failures make the confident blind,
+        Three failures in a row will make the confident blind,
         A truth emerges from his twisted mind."
         <br><br>
-        <em style="color: var(--accent-cyan);">💡 Tip: Sometimes losing reveals more than winning...</em>
+        <em style="color: var(--accent-cyan);">💡 Try losing on purpose three times in a row...</em>
     `;
     hintBox.classList.add('visible');
 }
@@ -176,12 +317,10 @@ function showAngelMessage() {
 function showKnifeHint() {
     const hintBox = document.getElementById('hint-masks-3');
     hintBox.innerHTML = `
-        <strong>🔪 Hidden Hint:</strong> "His laughter blinds him to the blade,
-        Click the tool his cruelty made.
-        Then strike the one who hides the truth,
-        Pierce his game, reclaim your youth!"
+        <strong>🔪 The Final Strike:</strong> The devil's guard is down while he laughs.
+        Click the knife, then strike him down to reveal the final memory fragment!
         <br><br>
-        <em style="color: var(--accent-red);">The knife glows with opportunity...</em>
+        <em style="color: #ff3366;">The knife awaits your command...</em>
     `;
     hintBox.classList.add('visible');
 }
@@ -191,15 +330,16 @@ function activateKnife() {
     if (MasksGame.knifeActive || !MasksGame.devilLaughing) return;
 
     MasksGame.knifeActive = true;
-    document.body.style.cursor = 'crosshair';
+    document.body.style.cursor = `url('assets/images/weapons/knife_cursor.png'), crosshair`;
 
     window.GameApp.showNotification('Knife equipped! Strike the devil!');
 
     // Devil becomes targetable
     const devil = document.getElementById('devil');
-    devil.style.cursor = 'crosshair';
-
-    devil.addEventListener('click', stabDevil, {once: true});
+    if (devil) {
+        devil.style.cursor = 'crosshair';
+        devil.addEventListener('click', stabDevil, {once: true});
+    }
 }
 
 // Stab the devil
@@ -208,12 +348,20 @@ function stabDevil() {
         MasksGame.puzzles.puzzle3Complete = true;
 
         const devil = document.getElementById('devil');
-        devil.classList.remove('laughing');
-        devil.classList.add('stabbed');
-        devil.textContent = '😵';
+        if (devil) {
+            devil.classList.remove('laughing');
+            devil.classList.add('stabbed');
+
+            // Change devil image to stabbed version
+            const devilImg = devil.querySelector('img');
+            if (devilImg) {
+                devilImg.src = 'assets/images/characters/devil_stabbed.png';
+            }
+        }
 
         document.body.style.cursor = 'default';
 
+        playSound(SHELL_SOUNDS.stab);
         window.GameApp.showNotification('💀 The deceiver falls!');
 
         setTimeout(() => {
@@ -225,7 +373,15 @@ function stabDevil() {
     }
 }
 
-// Save progress
+// Utility functions
+function playSound(audio) {
+    if (audio) {
+        audio.currentTime = 0;
+        audio.volume = 0.3;
+        audio.play().catch(e => console.log('Audio play failed:', e));
+    }
+}
+
 function saveMasksProgress() {
     localStorage.setItem('masksProgress', JSON.stringify({
         wins: MasksGame.wins,
@@ -235,18 +391,6 @@ function saveMasksProgress() {
         devilLaughing: MasksGame.devilLaughing
     }));
 }
-
-// Add shuffle animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes devil-shuffle {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-30px); }
-        50% { transform: translateX(30px); }
-        75% { transform: translateX(-15px); }
-    }
-`;
-document.head.appendChild(style);
 
 // Export for debugging
 window.MasksGame = MasksGame;
