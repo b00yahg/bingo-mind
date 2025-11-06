@@ -556,8 +556,8 @@ function saveThreadsProgress() {
 }
 
 // Add popup animations to CSS
-const style = document.createElement('style');
-style.textContent = `
+const threadsStyle = document.createElement('style');
+threadsStyle.textContent = `
     @keyframes popup-appear {
         0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
         100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
@@ -588,7 +588,7 @@ style.textContent = `
         100% { opacity: 1; }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(threadsStyle);
 
 // Export for use by app.js and debugging
 window.ThreadsGame = ThreadsGame;
