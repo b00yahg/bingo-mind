@@ -282,6 +282,8 @@ function startDevilLaugh() {
         }
     }
 
+    // Loop the devil laugh sound
+    SHELL_SOUNDS.devilLaugh.loop = true;
     playSound(SHELL_SOUNDS.devilLaugh);
 
     // Show knife and hint
@@ -455,6 +457,13 @@ function stabDevil() {
     if (!MasksGame.puzzles.puzzle3Complete) {
         MasksGame.puzzles.puzzle3Complete = true;
 
+        // IMMEDIATE JUMPSCARE - Stop laughing and play stab sound instantly
+        SHELL_SOUNDS.devilLaugh.pause();
+        SHELL_SOUNDS.devilLaugh.currentTime = 0;
+        SHELL_SOUNDS.devilLaugh.loop = false;
+
+        playSound(SHELL_SOUNDS.stab);
+
         const devil = document.getElementById('devil');
         if (devil) {
             devil.classList.remove('laughing');
@@ -469,7 +478,6 @@ function stabDevil() {
 
         document.body.style.cursor = 'default';
 
-        playSound(SHELL_SOUNDS.stab);
         window.GameApp.showNotification('💀 The deceiver falls!');
 
         setTimeout(() => {
