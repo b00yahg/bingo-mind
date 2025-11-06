@@ -557,10 +557,6 @@ threadsStyle.textContent = `
         0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
         100% { transform: translate(-50%, -50%) scale(0) rotate(180deg); opacity: 0; }
     }
-    @keyframes thread-pulse {
-        0%, 100% { transform: scale(1); box-shadow: 0 0 10px #ff0000; }
-        50% { transform: scale(1.1); box-shadow: 0 0 25px #ff0000; }
-    }
     @keyframes glitch-shake {
         0%, 100% { transform: translate(0, 0); }
         10% { transform: translate(-5px, 5px); }
