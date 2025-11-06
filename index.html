@@ -251,41 +251,50 @@
     <!-- Completion Screen -->
     <div id="completion-screen" class="modal">
         <div class="modal-content completion-content">
-            <div class="glitch-container">
-                <h2 class="glitch completion-title mechanical-text" data-text=">> DATA EXTRACTION COMPLETE <<">
-                    >> DATA EXTRACTION COMPLETE &lt;&lt;
-                </h2>
-            </div>
+            <div class="old-screen-overlay"></div>
 
-            <div class="assembled-fragments">
-                <h3 class="mechanical-text">FRAGMENTS ASSEMBLED:</h3>
-                <div class="final-code">
-                    <p class="code-line mechanical-text"><strong>Safe Code:</strong> <span id="final-safe-code"></span></p>
-                    <p class="code-line mechanical-text"><strong>Coordinates:</strong> <span id="final-coordinates"></span></p>
+            <div class="command-prompt-text">
+                <div class="glitch-container">
+                    <h2 class="glitch completion-title mechanical-text" data-text=">> DATA EXTRACTION COMPLETE <<">
+                        >> DATA EXTRACTION COMPLETE &lt;&lt;
+                    </h2>
+                </div>
+
+                <div class="assembled-fragments">
+                    <p class="mechanical-text">FRAGMENTS ASSEMBLED:</p>
+                    <div class="final-code">
+                        <p class="code-line mechanical-text">Safe Code: <span id="final-safe-code"></span></p>
+                        <p class="code-line mechanical-text">Coordinates: <span id="final-coordinates"></span></p>
+                    </div>
+                </div>
+
+                <div class="bingo-message">
+                    <p class="final-message mechanical-text">
+                        ERROR: CONSCIOUSNESS UNSTABLE<br>
+                        WARNING: MEMORY CORRUPTION DETECTED<br><br>
+                        FRAGMENTS RECOVERED FROM SUBJECT: BINGO<br>
+                        STATUS: EXTRACTION SUCCESSFUL<br>
+                        INTEGRITY: 87.3% DEGRADED<br><br>
+                        <span style="opacity: 0.6;">---</span><br><br>
+                        "YOU'VE PIECED TOGETHER WHAT I HID AWAY,<br>
+                        THE CODES, THE PLANS, THE GETAWAY.<br>
+                        MY MIND IS CLEAR, THE PATH IS SHOWN,<br>
+                        NOW USE THESE SECRETS I'VE MADE KNOWN."<br>
+                        <span style="font-size: 0.8em; opacity: 0.7;">- BINGO</span><br><br>
+                        <span style="opacity: 0.6;">---</span><br><br>
+                        THE SEEKERS THANK YOU FOR YOUR SERVICE.
+                    </p>
+                </div>
+
+                <div class="completion-buttons">
+                    <button id="download-memories-btn" class="btn-primary btn-large mechanical-text">
+                        >> DOWNLOAD EXTRACTED DATA &lt;&lt;
+                    </button>
+                    <button id="start-over-btn" class="btn-primary btn-large mechanical-text">
+                        >> START OVER &lt;&lt;
+                    </button>
                 </div>
             </div>
-
-            <div class="bingo-message">
-                <p class="final-message mechanical-text">
-                    ERROR: CONSCIOUSNESS UNSTABLE<br>
-                    WARNING: MEMORY CORRUPTION DETECTED<br><br>
-                    FRAGMENTS RECOVERED FROM SUBJECT: BINGO<br>
-                    STATUS: EXTRACTION SUCCESSFUL<br>
-                    INTEGRITY: 87.3% DEGRADED<br><br>
-                    <span style="opacity: 0.6;">---</span><br><br>
-                    "YOU'VE PIECED TOGETHER WHAT I HID AWAY,<br>
-                    THE CODES, THE PLANS, THE GETAWAY.<br>
-                    MY MIND IS CLEAR, THE PATH IS SHOWN,<br>
-                    NOW USE THESE SECRETS I'VE MADE KNOWN."<br>
-                    <span style="font-size: 0.8em; opacity: 0.7;">- BINGO</span><br><br>
-                    <span style="opacity: 0.6;">---</span><br><br>
-                    THE SEEKERS THANK YOU FOR YOUR SERVICE.
-                </p>
-            </div>
-
-            <button id="download-memories-btn" class="btn-primary btn-large pulse-glow mechanical-text">
-                >> DOWNLOAD EXTRACTED DATA &lt;&lt;
-            </button>
         </div>
     </div>
 

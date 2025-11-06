@@ -108,6 +108,12 @@ function setupEventListeners() {
         downloadBtn.addEventListener('click', downloadAllMemories);
     }
 
+    // Start over button
+    const startOverBtn = document.getElementById('start-over-btn');
+    if (startOverBtn) {
+        startOverBtn.addEventListener('click', startOver);
+    }
+
     // Portrait glitch effect
     const portrait = document.getElementById('bingo-portrait');
     setInterval(() => {
@@ -395,6 +401,17 @@ Now use these secrets I've made known."
         a.click();
         URL.revokeObjectURL(url);
     }, gameState.unlockedFiles.length * 500 + 500);
+}
+
+// Start over - reset all game progress
+function startOver() {
+    if (confirm('Are you sure you want to start over? All progress will be lost.')) {
+        // Clear all localStorage
+        localStorage.clear();
+
+        // Reload the page to start fresh
+        window.location.reload();
+    }
 }
 
 // Utility: Check if fragment is collected
