@@ -894,6 +894,11 @@ body::before {
     }
 }
 
+@keyframes jumpscareFlash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 .devil.stabbed {
     filter: grayscale(1) brightness(0.5);
     opacity: 0.8;

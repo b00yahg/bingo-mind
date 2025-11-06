@@ -457,24 +457,44 @@ function stabDevil() {
     if (!MasksGame.puzzles.puzzle3Complete) {
         MasksGame.puzzles.puzzle3Complete = true;
 
-        // IMMEDIATE JUMPSCARE - Stop laughing and play stab sound instantly
+        // IMMEDIATE JUMPSCARE - Stop laughing instantly
         SHELL_SOUNDS.devilLaugh.pause();
         SHELL_SOUNDS.devilLaugh.currentTime = 0;
         SHELL_SOUNDS.devilLaugh.loop = false;
 
-        playSound(SHELL_SOUNDS.stab);
-
         const devil = document.getElementById('devil');
         if (devil) {
+            // Remove transition for instant effect
+            devil.style.transition = 'none';
             devil.classList.remove('laughing');
             devil.classList.add('stabbed');
 
-            // Change devil image to stabbed version
+            // Change devil image to stabbed version INSTANTLY
             const devilImg = devil.querySelector('img');
             if (devilImg) {
                 devilImg.src = 'assets/images/characters/devil_stabbed.png';
             }
         }
+
+        // JUMPSCARE FLASH EFFECT
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            pointer-events: none;
+            animation: jumpscareFlash 0.2s ease-out;
+        `;
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 200);
+
+        // Play stab sound LOUDER
+        SHELL_SOUNDS.stab.volume = 0.8;
+        playSound(SHELL_SOUNDS.stab);
 
         document.body.style.cursor = 'default';
 
