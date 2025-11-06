@@ -776,12 +776,14 @@ body::before {
 
 .red-thread {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 0.6em;
+    bottom: 10px;
+    left: -5px;
+    width: 20px;
+    height: auto;
     cursor: pointer;
-    opacity: 0.3;
+    opacity: 0.4;
     transition: opacity 0.3s ease;
+    z-index: 1;
 }
 
 .red-thread:hover {
@@ -790,11 +792,6 @@ body::before {
 
 .red-thread.hidden {
     display: none;
-}
-
-@keyframes thread-dangle {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
 }
 
 /* Command Prompt */
@@ -922,51 +919,24 @@ body::before {
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
+    position: relative;
+    display: inline-block;
 }
 
 .shell:hover:not(.disabled) {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
 }
 
-.shell-top {
-    background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
-    border: 3px solid #654321;
-    border-radius: 50% 50% 0 0;
-    padding: 10px 20px;
-    font-weight: bold;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+.shell-img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.5s ease;
 }
 
-.shell-body {
-    width: 100px;
-    height: 80px;
-    background: linear-gradient(135deg, #D2691E 0%, #CD853F 100%);
-    border: 3px solid #654321;
-    border-radius: 0 0 50% 50%;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-}
-
-.shell.correct .shell-body::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2em;
-    color: #00ff00;
-    text-shadow: 0 0 10px #00ff00;
-}
-
-.shell.wrong .shell-body::after {
-    content: '✗';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2em;
-    color: #ff0000;
-    text-shadow: 0 0 10px #ff0000;
+.shell-emoji {
+    font-size: 4em;
 }
 
 .shell.disabled {
@@ -974,54 +944,82 @@ body::before {
     cursor: not-allowed;
 }
 
-.shell.lifted .shell-top {
-    transform: translateY(-30px) rotateX(-20deg);
-    transition: transform 0.5s ease;
+.shell.lifted .shell-img,
+.shell.lifted .shell-emoji {
+    transform: translateY(-40px);
 }
 
-.shell.has-ball .shell-body::before {
-    content: '⚫';
+.ball {
     position: absolute;
-    bottom: -25px;
+    bottom: -30px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.shell.has-ball .ball {
+    opacity: 1;
+}
+
+.shell.has-ball .ball::before {
+    content: '⚫';
     animation: ball-bounce 0.5s ease-in-out infinite;
+    display: block;
+}
+
+.shell.correct::after {
+    content: '✓';
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+    z-index: 10;
+}
+
+.shell.wrong::after {
+    content: '✗';
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+    z-index: 10;
 }
 
 @keyframes ball-bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-5px); }
-}
-
-.shell-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
 }
 
 .angel-corner {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 5px;
+    left: 5px;
 }
 
 .angel {
-    font-size: 0.5em;
-    opacity: 0.4;
+    font-size: 0.3em;
+    opacity: 0.3;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .angel img {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     object-fit: contain;
 }
 
 .angel:hover {
     opacity: 1;
-    transform: scale(1.3);
+    transform: scale(1.5);
     filter: drop-shadow(0 0 10px var(--accent-cyan));
 }
 

@@ -397,19 +397,6 @@ function showThread() {
     const thread = document.getElementById('wheel-thread');
     if (thread) {
         thread.classList.remove('hidden');
-        thread.textContent = '🧵 Pull me!';
-        thread.style.cssText = `
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 10px 20px;
-            background: rgba(255, 0, 0, 0.8);
-            border: 2px solid #fff;
-            border-radius: 10px;
-            animation: thread-pulse 1s ease-in-out infinite;
-        `;
 
         thread.addEventListener('click', () => {
             window.GameApp.showNotification('A command prompt appears...');

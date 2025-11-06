@@ -64,27 +64,6 @@ function initMasksGame() {
     if (knife) {
         knife.addEventListener('click', activateKnife);
     }
-
-    // Setup shell images
-    setupShellImages();
-}
-
-// Setup shell images
-function setupShellImages() {
-    document.querySelectorAll('.shell').forEach(shell => {
-        const shellBody = shell.querySelector('.shell-body');
-        if (shellBody && !shellBody.querySelector('img')) {
-            const img = document.createElement('img');
-            img.src = 'assets/images/shells/shell_closed.png';
-            img.alt = 'Shell';
-            img.className = 'shell-img';
-            img.onerror = () => {
-                // Fallback styling if image doesn't load
-                shellBody.style.background = 'linear-gradient(135deg, #D2691E 0%, #CD853F 100%)';
-            };
-            shellBody.appendChild(img);
-        }
-    });
 }
 
 // Update display
