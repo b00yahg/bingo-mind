@@ -265,11 +265,15 @@ function getLandedFortune() {
     // Calculate which segment
     const segmentIndex = Math.floor(normalizedRotation / anglePerSegment);
 
+    console.log('🎯 Landed on segment index:', segmentIndex, '=', ThreadsGame.fortunes[segmentIndex].text);
+
     return ThreadsGame.fortunes[segmentIndex];
 }
 
 // Handle fortune result
 function handleFortuneResult(fortune) {
+    console.log('🎲 Handling fortune:', fortune.text);
+
     // Simple notification instead of popup
     window.GameApp.showNotification(`🎡 ${fortune.text}`);
 

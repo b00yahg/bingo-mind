@@ -776,11 +776,16 @@ body::before {
 
 .red-thread {
     position: absolute;
-    bottom: -20px;
-    right: 40%;
-    font-size: 2em;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.6em;
     cursor: pointer;
-    animation: thread-dangle 2s ease-in-out infinite;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.red-thread:hover {
+    opacity: 1;
 }
 
 .red-thread.hidden {
@@ -844,6 +849,7 @@ body::before {
     font-size: 5em;
     display: inline-block;
     transition: all 0.3s ease;
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 5px rgba(0, 0, 0, 0.9));
 }
 
 .devil img {
@@ -996,26 +1002,26 @@ body::before {
 
 .angel-corner {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
 }
 
 .angel {
-    font-size: 0.8em;
-    opacity: 0.6;
+    font-size: 0.5em;
+    opacity: 0.4;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .angel img {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
     object-fit: contain;
 }
 
 .angel:hover {
     opacity: 1;
-    transform: scale(1.2);
+    transform: scale(1.3);
     filter: drop-shadow(0 0 10px var(--accent-cyan));
 }
 
