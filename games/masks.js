@@ -321,7 +321,6 @@ function showAngelMessage() {
     `;
 
     popup.innerHTML = `
-        <div style="font-size: 2em; margin-bottom: 10px;">👼</div>
         <strong style="font-size: 1.3em; color: #0066FF;">Angel's Wisdom</strong>
         <p style="margin: 15px 0; line-height: 1.5;">
             "For every win, his pride does grow,<br>
