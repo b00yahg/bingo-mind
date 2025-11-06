@@ -33,67 +33,58 @@ const WHEEL_SOUNDS = {
 let canvas, ctx;
 let wheelInitialized = false;
 
-// Initialize Threads Game
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing threads game...');
-    initThreadsGame();
-});
-
+// Initialize Threads Game - ONLY call this when entering the game screen!
 function initThreadsGame() {
-    console.log('initThreadsGame called');
+    if (wheelInitialized) {
+        console.log('Wheel already initialized, just redrawing...');
+        drawWheel(ThreadsGame.currentRotation);
+        return;
+    }
+
+    console.log('🎡 Initializing wheel for the first time...');
 
     canvas = document.getElementById('wheel-canvas');
     if (!canvas) {
-        console.error('Canvas element not found! Retrying in 100ms...');
-        setTimeout(initThreadsGame, 100);
+        console.error('❌ Canvas element not found!');
         return;
     }
 
-    console.log('Canvas found:', canvas.width, 'x', canvas.height);
+    console.log('✓ Canvas element found:', canvas.width, 'x', canvas.height);
 
     ctx = canvas.getContext('2d');
     if (!ctx) {
-        console.error('Could not get 2d context!');
+        console.error('❌ Could not get 2d context!');
         return;
     }
 
-    console.log('Canvas context initialized successfully');
-    wheelInitialized = true;
+    console.log('✓ Canvas context created');
 
-    // Load saved progress - but it will be cleared on page load anyway
-    const saved = localStorage.getItem('threadsProgress');
-    if (saved) {
-        const progress = JSON.parse(saved);
-        ThreadsGame.spinCount = progress.spinCount || 0;
-        ThreadsGame.puzzles = progress.puzzles || ThreadsGame.puzzles;
-        ThreadsGame.spinHistory = progress.spinHistory || [];
-        ThreadsGame.threadDiscovered = progress.threadDiscovered || false;
-
-        const spinCountEl = document.getElementById('spin-count');
-        if (spinCountEl) spinCountEl.textContent = ThreadsGame.spinCount;
+    // Update spin count display
+    const spinCountEl = document.getElementById('spin-count');
+    if (spinCountEl) {
+        spinCountEl.textContent = ThreadsGame.spinCount;
+        console.log('✓ Spin count display updated:', ThreadsGame.spinCount);
     }
 
-    // Draw initial wheel - force it!
-    console.log('Drawing initial wheel NOW...');
-    try {
-        drawWheel(0);
-        console.log('✓ Wheel drawn successfully!');
-    } catch (error) {
-        console.error('Error drawing wheel:', error);
-    }
+    // Draw initial wheel
+    console.log('🎨 Drawing wheel...');
+    drawWheel(0);
+    console.log('✓ Wheel drawn!');
 
-    // Spin button
+    // Spin button - remove old handlers first to avoid duplicates
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) {
-        spinBtn.addEventListener('click', spinWheel);
-        console.log('Spin button handler attached');
+        const newSpinBtn = spinBtn.cloneNode(true);
+        spinBtn.parentNode.replaceChild(newSpinBtn, spinBtn);
+        newSpinBtn.addEventListener('click', spinWheel);
+        console.log('✓ Spin button handler attached');
     }
 
     // Command prompt setup
     setupCommandPrompt();
 
-    // Check for hints to show
-    checkHintsToShow();
+    wheelInitialized = true;
+    console.log('✓✓✓ Wheel initialization complete!');
 }
 
 // Draw the fortune wheel (with text on segments)
@@ -198,19 +189,29 @@ function drawWheel(rotation = 0) {
 
 // Spin the wheel
 function spinWheel() {
-    if (ThreadsGame.spinning) return;
+    console.log('🎰 SPIN BUTTON CLICKED!');
+
+    if (ThreadsGame.spinning) {
+        console.log('Already spinning, ignoring click');
+        return;
+    }
 
     ThreadsGame.spinning = true;
     ThreadsGame.spinCount++;
+    console.log('Spin count increased to:', ThreadsGame.spinCount);
 
     const spinCountEl = document.getElementById('spin-count');
-    if (spinCountEl) spinCountEl.textContent = ThreadsGame.spinCount;
+    if (spinCountEl) {
+        spinCountEl.textContent = ThreadsGame.spinCount;
+        console.log('✓ Spin count display updated');
+    }
 
     playSound(WHEEL_SOUNDS.spin);
 
     // Random spin amount (multiple rotations + random position)
     const baseSpins = 5 + Math.random() * 3; // 5-8 full rotations
     const finalRotation = baseSpins * Math.PI * 2 + (Math.random() * Math.PI * 2);
+    console.log('Starting animation to rotation:', finalRotation);
 
     animateSpin(finalRotation);
     saveThreadsProgress();
@@ -589,25 +590,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Add redraw function to ThreadsGame
-ThreadsGame.redrawWheel = function() {
-    console.log('redrawWheel called');
-    if (!canvas || !ctx) {
-        console.log('Re-initializing canvas...');
-        canvas = document.getElementById('wheel-canvas');
-        if (canvas) {
-            ctx = canvas.getContext('2d');
-            console.log('Canvas re-initialized:', canvas.width, 'x', canvas.height);
-        }
-    }
-    if (canvas && ctx) {
-        console.log('Redrawing wheel at rotation:', ThreadsGame.currentRotation);
-        drawWheel(ThreadsGame.currentRotation);
-    } else {
-        console.error('Canvas not available for redraw - initializing fresh');
-        initThreadsGame();
-    }
-};
-
-// Export for debugging
+// Export for use by app.js and debugging
 window.ThreadsGame = ThreadsGame;
+window.initThreadsGame = initThreadsGame;

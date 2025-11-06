@@ -126,15 +126,17 @@ function navigateToScreen(screenId) {
     document.getElementById(screenId).classList.add('active');
     gameState.currentScreen = screenId;
 
-    // Re-initialize wheel when entering threads game
-    if (screenId === 'threads-game' && window.ThreadsGame) {
-        console.log('Re-initializing threads game wheel...');
-        // Give DOM a moment to update, then redraw wheel
+    // Initialize wheel when entering threads game
+    if (screenId === 'threads-game') {
+        console.log('📍 Navigating to threads game, initializing wheel...');
+        // Give DOM a moment to show the screen, then initialize
         setTimeout(() => {
-            if (window.ThreadsGame.redrawWheel) {
-                window.ThreadsGame.redrawWheel();
+            if (typeof initThreadsGame === 'function') {
+                initThreadsGame();
+            } else {
+                console.error('initThreadsGame function not found!');
             }
-        }, 100);
+        }, 50);
     }
 }
 
